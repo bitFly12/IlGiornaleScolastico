@@ -80,7 +80,6 @@
             display: block;
         }
         
-        /* Nuovo stile per i passaggi */
         .upload-steps {
             display: flex;
             justify-content: center;
@@ -232,7 +231,6 @@
             display: none;
         }
         
-        /* Stili per la votazione */
         .voting-interface {
             text-align: center;
         }
@@ -361,7 +359,6 @@
             color: #ddd;
         }
         
-        /* Miglioramenti Mobile */
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
@@ -469,7 +466,6 @@
             background: #f44336;
         }
 
-        /* Protezione base */
         .no-select {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -484,6 +480,15 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #666;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -501,7 +506,6 @@
         </div>
         
         <div class="tab-content active" id="upload-tab">
-            <!-- Indicatore dei passaggi -->
             <div class="upload-steps">
                 <div class="step active" id="step1">
                     <div class="step-number">1</div>
@@ -517,7 +521,6 @@
                 </div>
             </div>
             
-            <!-- Passaggio 1: Scelta genere -->
             <div class="step-content active" id="step1-content">
                 <h3>Step 1: Seleziona il genere</h3>
                 <p>Scegli se stai caricando una foto di un ragazzo o una ragazza</p>
@@ -538,7 +541,6 @@
                 </div>
             </div>
             
-            <!-- Passaggio 2: Caricamento foto -->
             <div class="step-content" id="step2-content">
                 <h3>Step 2: Carica la tua foto</h3>
                 <p id="selected-gender-text">Stai caricando una foto di: <strong id="current-gender"></strong></p>
@@ -565,7 +567,6 @@
                 </div>
             </div>
             
-            <!-- Passaggio 3: Conferma -->
             <div class="step-content" id="step3-content">
                 <h3>Step 3: Conferma il caricamento</h3>
                 
@@ -597,6 +598,11 @@
                     <button class="gender-btn female" data-gender="female" onclick="selectVoteGender('female')">
                         👧 Ragazze
                     </button>
+                </div>
+                
+                <!-- Aggiunto debug info -->
+                <div class="debug-info" id="debugInfo" style="display: none;">
+                    Debug: <span id="debugText"></span>
                 </div>
                 
                 <div id="singlePhotoView">
@@ -645,12 +651,10 @@
         
         // Gestione passaggi
         function goToStep(step) {
-            // Nascondi tutti i contenuti dei passaggi
             document.querySelectorAll('.step-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            // Aggiorna indicatori dei passaggi
             document.querySelectorAll('.step').forEach((stepEl, index) => {
                 stepEl.classList.remove('active', 'completed');
                 if (index + 1 < step) {
@@ -660,11 +664,9 @@
                 }
             });
             
-            // Mostra il contenuto del passaggio corrente
             document.getElementById(`step${step}-content`).classList.add('active');
             currentStep = step;
             
-            // Aggiorna i dati nel passaggio 3
             if (step === 3) {
                 document.getElementById('confirmPreviewImage').src = document.getElementById('previewImage').src;
                 document.getElementById('confirm-gender').textContent = 
@@ -676,22 +678,20 @@
         function selectGender(gender) {
             selectedGender = gender;
             
-            // Aggiorna pulsanti
             document.querySelectorAll('#step1-content .gender-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             document.querySelector(`#step1-content .gender-btn[data-gender="${gender}"]`).classList.add('active');
             
-            // Abilita pulsante Avanti
             document.getElementById('nextToStep2').disabled = false;
             
-            // Aggiorna testo nel passaggio 2
             document.getElementById('current-gender').textContent = 
                 gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
         }
         
-        // Selezione genere per votazione
+        // Selezione genere per votazione - FIXED
         function selectVoteGender(gender) {
+            console.log("Selezione genere votazione:", gender);
             currentVoteGender = gender;
             
             document.querySelectorAll('.gender-selection-vote .gender-btn').forEach(btn => {
@@ -709,7 +709,6 @@
             }
         });
         
-        // Gestione drag and drop
         const uploadArea = document.getElementById('uploadArea');
         
         uploadArea.addEventListener('dragover', (e) => {
@@ -743,14 +742,12 @@
             
             selectedFile = file;
             
-            // Mostra anteprima
             const reader = new FileReader();
             reader.onload = (e) => {
                 const previewImage = document.getElementById('previewImage');
                 previewImage.src = e.target.result;
                 previewImage.style.display = 'block';
                 
-                // Abilita pulsante Avanti
                 document.getElementById('nextToStep3').disabled = false;
             };
             reader.readAsDataURL(file);
@@ -768,23 +765,20 @@
             uploadBtn.textContent = 'Caricamento in corso...';
             
             try {
-                // Genera un nome univoco per il file
                 const fileExt = selectedFile.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
                 
-                // Carica l'immagine su Supabase Storage
                 const { data: storageData, error: storageError } = await supabase.storage
                     .from('photo-uploads')
                     .upload(fileName, selectedFile);
                 
                 if (storageError) throw storageError;
                 
-                // Ottieni l'URL pubblico del file
                 const { data: publicUrlData } = supabase.storage
                     .from('photo-uploads')
                     .getPublicUrl(fileName);
                 
-                // Salva i metadati della foto nel database
+                // FIX: Assicurati che il genere sia salvato correttamente
                 const { error: dbError } = await supabase
                     .from('photos')
                     .insert([
@@ -800,7 +794,6 @@
                 
                 showNotification('Foto caricata con successo!');
                 
-                // Reset del form
                 setTimeout(() => {
                     resetUploadForm();
                     goToStep(1);
@@ -828,34 +821,51 @@
             document.getElementById('uploadBtn').textContent = '🚀 Carica Foto';
         }
         
-        // Carica le foto per la votazione
+        // FIXED: Carica le foto per la votazione con debug
         async function loadPhotosForVoting() {
             const loadingIndicator = document.getElementById('loadingIndicator');
             const singlePhotoView = document.getElementById('singlePhotoView');
+            const debugInfo = document.getElementById('debugInfo');
+            const debugText = document.getElementById('debugText');
             
             loadingIndicator.style.display = 'block';
             singlePhotoView.innerHTML = '';
             singlePhotoView.appendChild(loadingIndicator);
             
+            console.log("Caricamento foto per genere:", currentVoteGender);
+            debugInfo.style.display = 'block';
+            debugText.textContent = `Caricamento ${currentVoteGender === 'male' ? 'ragazzi' : 'ragazze'}...`;
+
             try {
+                // FIX: Query migliorata con error handling
                 const { data: photos, error } = await supabase
                     .from('photos')
                     .select('*')
                     .eq('gender', currentVoteGender)
                     .order('created_at', { ascending: false });
                 
-                if (error) throw error;
-                
+                if (error) {
+                    console.error("Errore Supabase:", error);
+                    debugText.textContent = `Errore: ${error.message}`;
+                    throw error;
+                }
+
+                console.log("Foto trovate:", photos);
+                debugText.textContent = `Trovate ${photos ? photos.length : 0} foto`;
+
                 currentPhotos = photos || [];
                 currentPhotoIndex = 0;
                 
                 if (currentPhotos.length === 0) {
+                    debugText.textContent = "Nessuna foto trovata per questo genere";
                     showNoPhotosMessage();
                 } else {
                     showCurrentPhoto();
+                    debugInfo.style.display = 'none'; // Nascondi debug quando tutto funziona
                 }
             } catch (error) {
                 console.error('Errore nel caricamento delle foto:', error);
+                debugText.textContent = `Errore caricamento: ${error.message}`;
                 showNotification('Errore nel caricamento delle foto', true);
             }
         }
@@ -982,12 +992,16 @@
             }, 3000);
         }
         
-        // Protezione base
         document.addEventListener('keydown', function(e) {
             if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'u')) {
                 e.preventDefault();
                 return false;
             }
+        });
+
+        // Inizializza la votazione al caricamento della pagina
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPhotosForVoting();
         });
     </script>
 </body>
