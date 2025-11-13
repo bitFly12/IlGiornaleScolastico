@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smash or Pass - Vota le Foto</title>
+    <title>Smash or Pass - Cesaris's Edition</title>
     <style>
         * {
             margin: 0;
@@ -28,15 +28,16 @@
             text-align: center;
             margin-bottom: 30px;
             padding: 20px;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .logo {
+            max-width: 300px;
+            margin: 0 auto 20px;
+        }
+        
+        .logo-img {
+            width: 100%;
+            height: auto;
         }
         
         .tabs {
@@ -63,23 +64,19 @@
             color: white;
         }
         
-        .tab:hover:not(.active) {
-            background: #f0f0f0;
-        }
-        
         .tab-content {
             display: none;
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            min-height: 400px;
         }
         
         .tab-content.active {
             display: block;
         }
-        
+
+        /* Upload Steps */
         .upload-steps {
             display: flex;
             justify-content: center;
@@ -108,10 +105,6 @@
         
         .step.active .step-number {
             background: #6e8efb;
-        }
-        
-        .step.completed .step-number {
-            background: #4CAF50;
         }
         
         .step-content {
@@ -169,12 +162,6 @@
             background-color: #f8f9ff;
         }
         
-        .upload-area i {
-            font-size: 48px;
-            color: #6e8efb;
-            margin-bottom: 15px;
-        }
-        
         .preview-container {
             margin: 20px 0;
             text-align: center;
@@ -218,25 +205,25 @@
             color: #333;
         }
         
-        .btn-secondary:hover {
-            background: #ddd;
-        }
-        
         .btn:disabled {
             background: #cccccc;
             cursor: not-allowed;
         }
-        
-        #fileInput {
-            display: none;
+
+        /* Voting Steps */
+        .vote-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
         }
         
-        .voting-interface {
+        .vote-step-content {
+            display: none;
             text-align: center;
         }
         
-        .gender-selection-vote {
-            margin: 20px 0;
+        .vote-step-content.active {
+            display: block;
         }
         
         .photo-container {
@@ -280,7 +267,6 @@
         
         .smash-btn-single:hover {
             background: #45a049;
-            transform: scale(1.05);
         }
         
         .pass-btn-single {
@@ -290,160 +276,73 @@
         
         .pass-btn-single:hover {
             background: #da190b;
-            transform: scale(1.05);
         }
         
-        .progress-container-single {
-            margin: 20px auto;
-            max-width: 400px;
-        }
-        
-        .progress-bar-single {
-            height: 12px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .progress-fill.smash {
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-        }
-        
-        .progress-fill.pass {
-            background: linear-gradient(90deg, #f44336, #ff9800);
-        }
-        
-        .stats-single {
+        .navigation-buttons {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            margin-top: 20px;
         }
         
-        .smash-stat {
-            color: #4CAF50;
+        .back-button {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Vote History */
+        .vote-history {
+            margin-top: 30px;
         }
         
-        .pass-stat {
-            color: #f44336;
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
         }
         
-        .no-photos {
-            text-align: center;
-            padding: 40px;
-            color: #777;
+        .history-photo {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 15px;
         }
         
-        .loading {
-            text-align: center;
-            padding: 20px;
-            font-size: 18px;
-            color: #6e8efb;
+        .history-info {
+            flex-grow: 1;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #777;
+        .history-vote {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
         
-        .empty-state i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            color: #ddd;
+        .history-vote.smash {
+            background: #4CAF50;
+            color: white;
         }
         
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .tab {
-                padding: 12px 15px;
-                font-size: 14px;
-            }
-            
-            .tab-content {
-                padding: 20px 15px;
-            }
-            
-            .gender-btn {
-                padding: 12px 20px;
-                font-size: 16px;
-                min-width: 130px;
-                margin: 5px;
-            }
-            
-            .upload-area {
-                padding: 30px 15px;
-            }
-            
-            .preview-image {
-                max-width: 100%;
-                max-height: 300px;
-            }
-            
-            .photo-container {
-                max-width: 100%;
-            }
-            
-            .current-photo {
-                height: 400px;
-            }
-            
-            .vote-buttons-single {
-                gap: 10px;
-            }
-            
-            .smash-btn-single, .pass-btn-single {
-                padding: 12px 20px;
-                font-size: 16px;
-                min-width: 100px;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 200px;
-                margin: 5px 0;
-            }
+        .history-vote.pass {
+            background: #f44336;
+            color: white;
         }
         
-        @media (max-width: 480px) {
-            .upload-steps {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .step {
-                flex-direction: row;
-                margin: 0;
-            }
-            
-            .step-number {
-                margin-right: 10px;
-                margin-bottom: 0;
-            }
-            
-            .current-photo {
-                height: 300px;
-            }
+        .change-vote-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
         }
-        
+
         .notification {
             position: fixed;
             top: 20px;
@@ -461,43 +360,15 @@
         .notification.show {
             transform: translateX(0);
         }
-        
-        .notification.error {
-            background: #f44336;
-        }
-
-        .no-select {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        .no-context-menu {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        .debug-info {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #666;
-        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="no-select no-context-menu" oncontextmenu="return false;">
+<body>
     <div class="container">
         <header>
-            <h1>Smash or Pass</h1>
-            <p>Carica la tua foto anonimamente e vota le foto degli altri!</p>
+            <div class="logo">
+                <img src="data:image/png;base64,YOUR_LOGO_BASE64_HERE" alt="Smash or Pass" class="logo-img">
+            </div>
         </header>
         
         <div class="tabs">
@@ -505,6 +376,7 @@
             <div class="tab" data-tab="vote">Vota Foto</div>
         </div>
         
+        <!-- Upload Tab -->
         <div class="tab-content active" id="upload-tab">
             <div class="upload-steps">
                 <div class="step active" id="step1">
@@ -523,486 +395,352 @@
             
             <div class="step-content active" id="step1-content">
                 <h3>Step 1: Seleziona il genere</h3>
-                <p>Scegli se stai caricando una foto di un ragazzo o una ragazza</p>
-                
                 <div class="gender-selection">
-                    <button class="gender-btn male" data-gender="male" onclick="selectGender('male')">
-                        👦 Ragazzo
-                    </button>
-                    <button class="gender-btn female" data-gender="female" onclick="selectGender('female')">
-                        👧 Ragazza
-                    </button>
+                    <button class="gender-btn male" onclick="selectGender('male')">👦 Ragazzo</button>
+                    <button class="gender-btn female" onclick="selectGender('female')">👧 Ragazza</button>
                 </div>
-                
                 <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="goToStep(2)" id="nextToStep2" disabled>
-                        Avanti
-                    </button>
+                    <button class="btn btn-primary" onclick="goToStep(2)" id="nextToStep2" disabled>Avanti</button>
                 </div>
             </div>
             
             <div class="step-content" id="step2-content">
                 <h3>Step 2: Carica la tua foto</h3>
-                <p id="selected-gender-text">Stai caricando una foto di: <strong id="current-gender"></strong></p>
-                
-                <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                    <i>📷</i>
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                     <h3>Clicca qui per selezionare una foto</h3>
-                    <p>Oppure trascina il file qui</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 10px;">Dimensione massima: 5MB</p>
-                    <input type="file" id="fileInput" accept="image/*">
+                    <p>Dimensione massima: 5MB</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none">
                 </div>
-                
                 <div class="preview-container">
-                    <img id="previewImage" class="preview-image" alt="Anteprima" style="display: none;">
+                    <img id="previewImage" class="preview-image" style="display:none">
                 </div>
-                
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="goToStep(1)">
-                        Indietro
-                    </button>
-                    <button class="btn btn-primary" onclick="goToStep(3)" id="nextToStep3" disabled>
-                        Avanti
-                    </button>
+                    <button class="btn btn-secondary" onclick="goToStep(1)">Indietro</button>
+                    <button class="btn btn-primary" onclick="goToStep(3)" id="nextToStep3" disabled>Avanti</button>
                 </div>
             </div>
             
             <div class="step-content" id="step3-content">
-                <h3>Step 3: Conferma il caricamento</h3>
-                
+                <h3>Step 3: Conferma</h3>
                 <div class="preview-container">
-                    <img id="confirmPreviewImage" class="preview-image" alt="Anteprima conferma">
+                    <img id="confirmPreviewImage" class="preview-image">
                 </div>
-                
-                <p><strong>Genere:</strong> <span id="confirm-gender"></span></p>
-                <p style="color: #666; margin: 15px 0;">Controlla che tutto sia corretto prima di procedere</p>
-                
                 <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="goToStep(2)">
-                        Modifica
-                    </button>
-                    <button class="btn btn-primary" onclick="uploadPhoto()" id="uploadBtn">
-                        🚀 Carica Foto
-                    </button>
+                    <button class="btn btn-secondary" onclick="goToStep(2)">Modifica</button>
+                    <button class="btn btn-primary" onclick="uploadPhoto()" id="uploadBtn">Carica Foto</button>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Vote Tab -->
         <div class="tab-content" id="vote-tab">
-            <div class="voting-interface">
-                <div class="gender-selection-vote">
-                    <h3>Su chi vuoi votare?</h3>
-                    <button class="gender-btn male active" data-gender="male" onclick="selectVoteGender('male')">
-                        👦 Ragazzi
-                    </button>
-                    <button class="gender-btn female" data-gender="female" onclick="selectVoteGender('female')">
-                        👧 Ragazze
-                    </button>
+            <div class="vote-steps">
+                <div class="step active" id="vote-step1">
+                    <div class="step-number">1</div>
+                    <div>Scegli Genere</div>
                 </div>
-                
-                <!-- Aggiunto debug info -->
-                <div class="debug-info" id="debugInfo" style="display: none;">
-                    Debug: <span id="debugText"></span>
+                <div class="step" id="vote-step2">
+                    <div class="step-number">2</div>
+                    <div>Vota</div>
                 </div>
-                
+                <div class="step" id="vote-step3">
+                    <div class="step-number">3</div>
+                    <div>Cronologia</div>
+                </div>
+            </div>
+
+            <!-- Step 1: Choose Gender -->
+            <div class="vote-step-content active" id="vote-step1-content">
+                <h3>Scegli il genere da votare</h3>
+                <div class="gender-selection">
+                    <button class="gender-btn male active" onclick="selectVoteGender('male')">👦 Ragazzi</button>
+                    <button class="gender-btn female" onclick="selectVoteGender('female')">👧 Ragazze</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="goToVoteStep(2)">Inizia a Votare</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Voting -->
+            <div class="vote-step-content" id="vote-step2-content">
                 <div id="singlePhotoView">
-                    <div class="loading" id="loadingIndicator">
-                        Caricamento foto in corso...
-                    </div>
+                    <div class="loading">Caricamento foto...</div>
+                </div>
+                <div class="navigation-buttons">
+                    <button class="back-button" onclick="goToVoteStep(1)">← Cambia Genere</button>
+                    <button class="back-button" onclick="goToVoteStep(3)">Vedi Cronologia →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: History -->
+            <div class="vote-step-content" id="vote-step3-content">
+                <h3>Le tue decisioni</h3>
+                <div id="voteHistory"></div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="goToVoteStep(2)">← Torna a Votare</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="notification" id="notification"></div>
 
     <script>
-        // 🔥 SOSTITUISCI QUESTI VALORI CON I TUOI DI SUPABASE!
+        // Configurazione Supabase
         const SUPABASE_URL = 'https://rreyuxxnyhhahwkjxfiv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZXl1eHhueWhoYWh3a2p4Zml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjIyNDgsImV4cCI6MjA3ODU5ODI0OH0.F_ZnqK10o8h-IY23_g9RzkPHqQVbpAvjQmw0awlApBE';
-        
-        // Inizializza Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+
         // Variabili globali
         let selectedGender = null;
         let selectedFile = null;
         let currentVoteGender = 'male';
         let currentPhotos = [];
         let currentPhotoIndex = 0;
-        let currentStep = 1;
-        
-        // Gestione delle tab
+        let voteHistory = JSON.parse(localStorage.getItem('voteHistory') || '{}');
+
+        // Gestione tab
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
-                
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-                
                 tab.classList.add('active');
                 document.getElementById(`${tabId}-tab`).classList.add('active');
-                
-                if (tabId === 'vote') {
-                    loadPhotosForVoting();
-                }
             });
         });
-        
-        // Gestione passaggi
+
+        // Upload Steps
         function goToStep(step) {
-            document.querySelectorAll('.step-content').forEach(content => {
-                content.classList.remove('active');
-            });
+            document.querySelectorAll('.step-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`step${step}-content`).classList.add('active');
             
             document.querySelectorAll('.step').forEach((stepEl, index) => {
-                stepEl.classList.remove('active', 'completed');
-                if (index + 1 < step) {
-                    stepEl.classList.add('completed');
-                } else if (index + 1 === step) {
-                    stepEl.classList.add('active');
-                }
+                stepEl.classList.remove('active');
+                if (index + 1 === step) stepEl.classList.add('active');
             });
-            
-            document.getElementById(`step${step}-content`).classList.add('active');
-            currentStep = step;
-            
+
             if (step === 3) {
                 document.getElementById('confirmPreviewImage').src = document.getElementById('previewImage').src;
-                document.getElementById('confirm-gender').textContent = 
-                    selectedGender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
             }
         }
-        
-        // Selezione genere per upload
+
         function selectGender(gender) {
             selectedGender = gender;
-            
-            document.querySelectorAll('#step1-content .gender-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`#step1-content .gender-btn[data-gender="${gender}"]`).classList.add('active');
-            
+            document.querySelectorAll('#step1-content .gender-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
             document.getElementById('nextToStep2').disabled = false;
-            
-            document.getElementById('current-gender').textContent = 
-                gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
         }
-        
-        // Selezione genere per votazione - FIXED
-        function selectVoteGender(gender) {
-            console.log("Selezione genere votazione:", gender);
-            currentVoteGender = gender;
-            
-            document.querySelectorAll('.gender-selection-vote .gender-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`.gender-selection-vote .gender-btn[data-gender="${gender}"]`).classList.add('active');
-            
-            loadPhotosForVoting();
-        }
-        
-        // Gestione selezione file
+
+        // File handling
         document.getElementById('fileInput').addEventListener('change', function(e) {
-            if (e.target.files.length) {
-                handleFileSelection(e.target.files[0]);
-            }
+            if (e.target.files.length) handleFileSelection(e.target.files[0]);
         });
-        
-        const uploadArea = document.getElementById('uploadArea');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.backgroundColor = '#f0f4ff';
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.backgroundColor = '';
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.backgroundColor = '';
-            
-            if (e.dataTransfer.files.length) {
-                handleFileSelection(e.dataTransfer.files[0]);
-            }
-        });
-        
+
         function handleFileSelection(file) {
-            if (!file.type.match('image.*')) {
-                showNotification('Seleziona solo file immagine!', true);
+            if (!file.type.match('image.*') || file.size > 5 * 1024 * 1024) {
+                showNotification('File non valido!', true);
                 return;
             }
-            
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('L\'immagine non deve superare 5MB!', true);
-                return;
-            }
-            
             selectedFile = file;
-            
             const reader = new FileReader();
             reader.onload = (e) => {
-                const previewImage = document.getElementById('previewImage');
-                previewImage.src = e.target.result;
-                previewImage.style.display = 'block';
-                
+                document.getElementById('previewImage').src = e.target.result;
+                document.getElementById('previewImage').style.display = 'block';
                 document.getElementById('nextToStep3').disabled = false;
             };
             reader.readAsDataURL(file);
         }
-        
-        // Upload della foto
+
         async function uploadPhoto() {
-            if (!selectedFile || !selectedGender) {
-                showNotification('Errore: dati mancanti!', true);
-                return;
-            }
+            if (!selectedFile || !selectedGender) return;
             
             const uploadBtn = document.getElementById('uploadBtn');
             uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Caricamento in corso...';
-            
+            uploadBtn.textContent = 'Caricamento...';
+
             try {
                 const fileExt = selectedFile.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
                 
-                const { data: storageData, error: storageError } = await supabase.storage
+                // Upload a Supabase Storage
+                const { error: storageError } = await supabase.storage
                     .from('photo-uploads')
                     .upload(fileName, selectedFile);
-                
                 if (storageError) throw storageError;
-                
+
+                // Get URL
                 const { data: publicUrlData } = supabase.storage
                     .from('photo-uploads')
                     .getPublicUrl(fileName);
-                
-                // FIX: Assicurati che il genere sia salvato correttamente
+
+                // Salva nel database
                 const { error: dbError } = await supabase
                     .from('photos')
-                    .insert([
-                        { 
-                            image_url: publicUrlData.publicUrl,
-                            gender: selectedGender,
-                            smash_count: 0,
-                            pass_count: 0
-                        }
-                    ]);
-                
+                    .insert([{ 
+                        image_url: publicUrlData.publicUrl,
+                        gender: selectedGender,
+                        smash_count: 0,
+                        pass_count: 0
+                    }]);
                 if (dbError) throw dbError;
-                
-                showNotification('Foto caricata con successo!');
-                
+
+                showNotification('Foto caricata!');
                 setTimeout(() => {
                     resetUploadForm();
                     goToStep(1);
                 }, 2000);
-                
+
             } catch (error) {
-                console.error('Errore durante il caricamento:', error);
-                showNotification('Errore durante il caricamento. Riprova.', true);
+                showNotification('Errore nel caricamento', true);
                 uploadBtn.disabled = false;
-                uploadBtn.textContent = '🚀 Carica Foto';
+                uploadBtn.textContent = 'Carica Foto';
             }
         }
-        
+
         function resetUploadForm() {
             selectedFile = null;
             selectedGender = null;
             document.getElementById('previewImage').style.display = 'none';
             document.getElementById('fileInput').value = '';
-            document.querySelectorAll('#step1-content .gender-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('#step1-content .gender-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('nextToStep2').disabled = true;
             document.getElementById('nextToStep3').disabled = true;
-            document.getElementById('uploadBtn').disabled = false;
-            document.getElementById('uploadBtn').textContent = '🚀 Carica Foto';
         }
-        
-        // FIXED: Carica le foto per la votazione con debug
-        async function loadPhotosForVoting() {
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const singlePhotoView = document.getElementById('singlePhotoView');
-            const debugInfo = document.getElementById('debugInfo');
-            const debugText = document.getElementById('debugText');
-            
-            loadingIndicator.style.display = 'block';
-            singlePhotoView.innerHTML = '';
-            singlePhotoView.appendChild(loadingIndicator);
-            
-            console.log("Caricamento foto per genere:", currentVoteGender);
-            debugInfo.style.display = 'block';
-            debugText.textContent = `Caricamento ${currentVoteGender === 'male' ? 'ragazzi' : 'ragazze'}...`;
 
+        // Voting Steps
+        function goToVoteStep(step) {
+            document.querySelectorAll('.vote-step-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`vote-step${step}-content`).classList.add('active');
+            
+            document.querySelectorAll('.vote-steps .step').forEach((stepEl, index) => {
+                stepEl.classList.remove('active');
+                if (index + 1 === step) stepEl.classList.add('active');
+            });
+
+            if (step === 2) loadPhotosForVoting();
+            if (step === 3) loadVoteHistory();
+        }
+
+        function selectVoteGender(gender) {
+            currentVoteGender = gender;
+            document.querySelectorAll('#vote-step1-content .gender-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        async function loadPhotosForVoting() {
             try {
-                // FIX: Query migliorata con error handling
                 const { data: photos, error } = await supabase
                     .from('photos')
                     .select('*')
                     .eq('gender', currentVoteGender)
                     .order('created_at', { ascending: false });
-                
-                if (error) {
-                    console.error("Errore Supabase:", error);
-                    debugText.textContent = `Errore: ${error.message}`;
-                    throw error;
-                }
-
-                console.log("Foto trovate:", photos);
-                debugText.textContent = `Trovate ${photos ? photos.length : 0} foto`;
 
                 currentPhotos = photos || [];
                 currentPhotoIndex = 0;
-                
-                if (currentPhotos.length === 0) {
-                    debugText.textContent = "Nessuna foto trovata per questo genere";
-                    showNoPhotosMessage();
-                } else {
-                    showCurrentPhoto();
-                    debugInfo.style.display = 'none'; // Nascondi debug quando tutto funziona
-                }
+                showCurrentPhoto();
+
             } catch (error) {
-                console.error('Errore nel caricamento delle foto:', error);
-                debugText.textContent = `Errore caricamento: ${error.message}`;
-                showNotification('Errore nel caricamento delle foto', true);
+                showNotification('Errore nel caricamento foto', true);
             }
         }
-        
-        function showNoPhotosMessage() {
-            const singlePhotoView = document.getElementById('singlePhotoView');
-            singlePhotoView.innerHTML = `
-                <div class="no-photos">
-                    <i>📷</i>
-                    <h3>Nessuna foto disponibile</h3>
-                    <p>Non ci sono foto ${currentVoteGender === 'male' ? 'di ragazzi' : 'di ragazze'} da votare.</p>
-                    <p style="margin-top: 10px; color: #666;">Sii il primo a caricare una foto!</p>
-                </div>
-            `;
-        }
-        
+
         function showCurrentPhoto() {
             if (currentPhotoIndex >= currentPhotos.length) {
-                showNoPhotosMessage();
+                document.getElementById('singlePhotoView').innerHTML = '<div class="no-photos">Nessuna foto disponibile</div>';
                 return;
             }
-            
+
             const photo = currentPhotos[currentPhotoIndex];
-            const totalVotes = photo.smash_count + photo.pass_count;
-            const smashPercentage = totalVotes > 0 ? 
-                Math.round((photo.smash_count / totalVotes) * 100) : 0;
-            const passPercentage = totalVotes > 0 ? 
-                Math.round((photo.pass_count / totalVotes) * 100) : 0;
-            
-            const progressBarClass = smashPercentage >= passPercentage ? 'smash' : 'pass';
-            const progressPercentage = smashPercentage >= passPercentage ? smashPercentage : passPercentage;
-            
-            const singlePhotoView = document.getElementById('singlePhotoView');
-            singlePhotoView.innerHTML = `
+            document.getElementById('singlePhotoView').innerHTML = `
                 <div class="photo-container">
-                    <img src="${photo.image_url}" alt="Foto" class="current-photo" onerror="this.src='https://via.placeholder.com/400x500?text=Errore+Caricamento'">
+                    <img src="${photo.image_url}" class="current-photo">
                 </div>
-                
-                <div class="progress-container-single">
-                    <div class="progress-bar-single">
-                        <div class="progress-fill ${progressBarClass}" style="width: ${progressPercentage}%"></div>
-                    </div>
-                    <div class="stats-single">
-                        <span class="smash-stat">${smashPercentage}% Smash (${photo.smash_count})</span>
-                        <span class="pass-stat">${passPercentage}% Pass (${photo.pass_count})</span>
-                    </div>
-                </div>
-                
                 <div class="vote-buttons-single">
                     <button class="pass-btn-single" onclick="voteCurrentPhoto('pass')">PASS 👎</button>
                     <button class="smash-btn-single" onclick="voteCurrentPhoto('smash')">SMASH 👍</button>
                 </div>
-                
-                <div style="margin-top: 15px; color: #666; font-size: 14px;">
-                    Foto ${currentPhotoIndex + 1} di ${currentPhotos.length}
-                </div>
             `;
         }
-        
+
         async function voteCurrentPhoto(voteType) {
-            if (currentPhotoIndex >= currentPhotos.length) return;
-            
             const photo = currentPhotos[currentPhotoIndex];
             const photoId = photo.id;
-            
+
             try {
-                const votedPhotos = JSON.parse(localStorage.getItem('votedPhotos') || '{}');
+                // Salva il voto nella cronologia
+                voteHistory[photoId] = voteType;
+                localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
+
+                // Aggiorna il database
+                const newSmashCount = voteType === 'smash' ? photo.smash_count + 1 : photo.smash_count;
+                const newPassCount = voteType === 'pass' ? photo.pass_count + 1 : photo.pass_count;
                 
-                if (votedPhotos[photoId]) {
-                    showNotification('Hai già votato per questa foto!', true);
-                    return;
-                }
-                
-                const { data: currentPhoto, error: fetchError } = await supabase
+                await supabase
                     .from('photos')
-                    .select('*')
-                    .eq('id', photoId)
-                    .single();
-                
-                if (fetchError) throw fetchError;
-                
-                const newSmashCount = voteType === 'smash' ? currentPhoto.smash_count + 1 : currentPhoto.smash_count;
-                const newPassCount = voteType === 'pass' ? currentPhoto.pass_count + 1 : currentPhoto.pass_count;
-                
-                const { error: updateError } = await supabase
-                    .from('photos')
-                    .update({ 
-                        smash_count: newSmashCount,
-                        pass_count: newPassCount
-                    })
+                    .update({ smash_count: newSmashCount, pass_count: newPassCount })
                     .eq('id', photoId);
-                
-                if (updateError) throw updateError;
-                
-                votedPhotos[photoId] = true;
-                localStorage.setItem('votedPhotos', JSON.stringify(votedPhotos));
-                
-                showNotification(`Hai votato ${voteType === 'smash' ? 'Smash 👍' : 'Pass 👎'}!`);
-                
+
+                showNotification(`Hai votato ${voteType === 'smash' ? 'Smash!' : 'Pass!'}`);
                 currentPhotoIndex++;
-                setTimeout(() => {
-                    showCurrentPhoto();
-                }, 500);
-                
+                showCurrentPhoto();
+
             } catch (error) {
-                console.error('Errore durante il voto:', error);
-                showNotification('Errore durante il voto. Riprova.', true);
+                showNotification('Errore nel voto', true);
             }
         }
-        
+
+        async function loadVoteHistory() {
+            const historyContainer = document.getElementById('voteHistory');
+            const votedPhotoIds = Object.keys(voteHistory);
+            
+            if (votedPhotoIds.length === 0) {
+                historyContainer.innerHTML = '<p>Non hai ancora votato nessuna foto</p>';
+                return;
+            }
+
+            try {
+                const { data: photos, error } = await supabase
+                    .from('photos')
+                    .select('*')
+                    .in('id', votedPhotoIds);
+
+                historyContainer.innerHTML = photos.map(photo => `
+                    <div class="history-item">
+                        <img src="${photo.image_url}" class="history-photo">
+                        <div class="history-info">
+                            <div>${photo.gender === 'male' ? '👦' : '👧'}</div>
+                        </div>
+                        <span class="history-vote ${voteHistory[photo.id]}">
+                            ${voteHistory[photo.id].toUpperCase()}
+                        </span>
+                        <button class="change-vote-btn" onclick="changeVote('${photo.id}')">
+                            Cambia
+                        </button>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                historyContainer.innerHTML = '<p>Errore nel caricamento della cronologia</p>';
+            }
+        }
+
+        function changeVote(photoId) {
+            const currentVote = voteHistory[photoId];
+            const newVote = currentVote === 'smash' ? 'pass' : 'smash';
+            voteHistory[photoId] = newVote;
+            localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
+            loadVoteHistory();
+            showNotification('Voto cambiato!');
+        }
+
         function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
-            notification.className = 'notification';
-            
-            if (isError) {
-                notification.classList.add('error');
-            }
-            
+            notification.className = `notification ${isError ? 'error' : ''}`;
             notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            setTimeout(() => notification.classList.remove('show'), 3000);
         }
-        
-        document.addEventListener('keydown', function(e) {
-            if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'u')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // Inizializza la votazione al caricamento della pagina
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPhotosForVoting();
-        });
     </script>
 </body>
 </html>
