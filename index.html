@@ -459,6 +459,12 @@
             cursor: pointer;
             margin-left: 10px;
             font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .change-vote-btn:hover {
+            background: #FFC400;
+            transform: scale(1.05);
         }
         
         .loading {
@@ -730,6 +736,13 @@
             .history-photo {
                 margin-right: 0;
                 margin-bottom: 10px;
+            }
+            
+            .change-vote-btn {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+                max-width: 200px;
             }
             
             .leaderboard-item {
@@ -1330,6 +1343,59 @@
             }
         }
 
+        // FUNZIONE PER CAMBIARE VOTO NELLA CRONOLOGIA
+        async function changeVote(photoId, newVote) {
+            try {
+                // Recupera i dati attuali della foto
+                const { data: photo, error: fetchError } = await supabase
+                    .from('photos')
+                    .select('smash_count, pass_count')
+                    .eq('id', photoId)
+                    .single();
+                
+                if (fetchError) throw new Error('Foto non trovata');
+                
+                const oldVote = voteHistory[photoId];
+                
+                // Aggiorna i conteggi nel database
+                let updateData = {};
+                
+                if (oldVote === 'smash' && newVote === 'pass') {
+                    // Da Smash a Pass: decrementa smash, incrementa pass
+                    updateData = {
+                        smash_count: photo.smash_count - 1,
+                        pass_count: photo.pass_count + 1
+                    };
+                } else if (oldVote === 'pass' && newVote === 'smash') {
+                    // Da Pass a Smash: decrementa pass, incrementa smash
+                    updateData = {
+                        smash_count: photo.smash_count + 1,
+                        pass_count: photo.pass_count - 1
+                    };
+                }
+                
+                const { error: updateError } = await supabase
+                    .from('photos')
+                    .update(updateData)
+                    .eq('id', photoId);
+                
+                if (updateError) throw new Error('Errore nell\'aggiornamento del voto');
+                
+                // Aggiorna la cronologia locale
+                voteHistory[photoId] = newVote;
+                localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
+                
+                showNotification(`Voto cambiato in ${newVote === 'smash' ? 'SMASH' : 'PASS'}!`, false, 'success');
+                
+                // Ricarica la cronologia
+                loadVoteHistory();
+                
+            } catch (error) {
+                console.error('Errore durante il cambio di voto:', error);
+                showNotification('Errore durante il cambio di voto. Riprova.', true);
+            }
+        }
+
         async function loadReportedPhotos() {
             if (!isModerationAuthenticated) return;
             
@@ -1617,6 +1683,10 @@
                         `;
                     }
 
+                    const oppositeVote = vote === 'smash' ? 'pass' : 'smash';
+                    const oppositeText = vote === 'smash' ? 'PASS' : 'SMASH';
+                    const oppositeEmoji = vote === 'smash' ? '😐' : '😍';
+
                     return `
                         <div class="history-item">
                             <img src="${photo.image_url}" class="history-photo" alt="Foto votata" onerror="this.style.display='none'">
@@ -1628,6 +1698,9 @@
                             <div class="history-vote ${vote}">
                                 ${vote === 'smash' ? 'SMASH' : 'PASS'}
                             </div>
+                            <button class="change-vote-btn" onclick="changeVote('${photo.id}', '${oppositeVote}')">
+                                Cambia in ${oppositeEmoji} ${oppositeText}
+                            </button>
                         </div>
                     `;
                 }).join('');
