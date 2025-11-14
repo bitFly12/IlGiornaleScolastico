@@ -22,10 +22,8 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            transition: all 0.3s ease;
         }
         
-        /* Menu Laterale */
         .sidebar {
             position: fixed;
             top: 0;
@@ -83,11 +81,6 @@
         .sidebar-nav a.active {
             background: #2a5298;
             color: white;
-        }
-        
-        .sidebar-nav i {
-            margin-right: 10px;
-            font-size: 18px;
         }
         
         .menu-toggle {
@@ -153,19 +146,12 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .tab-content.active {
             display: block;
         }
 
-        /* Stili per i passaggi di upload */
         .upload-steps {
             display: flex;
             justify-content: center;
@@ -256,12 +242,6 @@
             background-color: #f8f9ff;
         }
         
-        .upload-area i {
-            font-size: 48px;
-            color: #2a5298;
-            margin-bottom: 15px;
-        }
-        
         .preview-container {
             margin: 20px 0;
             text-align: center;
@@ -318,7 +298,6 @@
             display: none;
         }
         
-        /* Stili per la votazione */
         .voting-interface {
             text-align: center;
         }
@@ -427,7 +406,6 @@
             color: #f44336;
         }
         
-        /* Stili per la cronologia */
         .vote-history {
             margin-top: 30px;
             text-align: left;
@@ -483,12 +461,6 @@
             font-weight: bold;
         }
         
-        .no-photos {
-            text-align: center;
-            padding: 40px;
-            color: #777;
-        }
-        
         .loading {
             text-align: center;
             padding: 20px;
@@ -500,12 +472,6 @@
             text-align: center;
             padding: 40px;
             color: #777;
-        }
-        
-        .empty-state i {
-            font-size: 64px;
-            margin-bottom: 20px;
-            color: #ddd;
         }
         
         .history-controls {
@@ -533,7 +499,6 @@
             border-color: #2a5298;
         }
         
-        /* Stili per la classifica */
         .leaderboard-item {
             display: flex;
             align-items: center;
@@ -571,18 +536,6 @@
             margin-right: 10px;
         }
         
-        .info-btn {
-            background: #2a5298;
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        /* Stili per i modal */
         .modal {
             position: fixed;
             top: 0;
@@ -620,7 +573,6 @@
             cursor: pointer;
         }
         
-        /* Stili per gli achievement */
         .achievement-item {
             display: flex;
             align-items: center;
@@ -644,79 +596,6 @@
             opacity: 0.5;
         }
         
-        /* Stili per le animazioni */
-        .smash-effect {
-            animation: smashPulse 0.6s ease;
-        }
-        
-        .pass-effect {
-            animation: passSlide 0.6s ease;
-        }
-        
-        @keyframes smashPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        @keyframes passSlide {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(-20px); }
-            100% { transform: translateX(0); }
-        }
-        
-        /* Stili per il sistema di report */
-        .report-status {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .report-pending {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .report-approved {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .report-rejected {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Stili per le notifiche in tempo reale */
-        .live-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .live-stat {
-            text-align: center;
-        }
-        
-        .live-stat-number {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .live-stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        /* Stili per l'admin panel */
         .admin-panel {
             margin-top: 30px;
         }
@@ -863,11 +742,6 @@
                 margin-bottom: 10px;
             }
             
-            .live-stats {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
             .sidebar {
                 width: 280px;
                 left: -280px;
@@ -922,15 +796,6 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-        }
-        
-        .debug-info {
-            background: #f8f9fa;
-            border-left: 4px solid #2a5298;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
-            font-size: 14px;
         }
         
         .settings-section {
@@ -1112,22 +977,6 @@
                     </button>
                 </div>
                 
-                <!-- Statistiche in tempo reale -->
-                <div class="live-stats" id="liveStats" style="display: none;">
-                    <div class="live-stat">
-                        <div class="live-stat-number" id="liveSmash">0</div>
-                        <div class="live-stat-label">SMASH</div>
-                    </div>
-                    <div class="live-stat">
-                        <div class="live-stat-number" id="livePass">0</div>
-                        <div class="live-stat-label">PASS</div>
-                    </div>
-                    <div class="live-stat">
-                        <div class="live-stat-number" id="liveTotal">0</div>
-                        <div class="live-stat-label">TOTALE</div>
-                    </div>
-                </div>
-                
                 <div id="singlePhotoView">
                     <div class="loading" id="loadingIndicator">
                         Caricamento foto in corso...
@@ -1194,21 +1043,6 @@
                     </div>
                 </div>
                 
-                <div class="settings-section">
-                    <h3>Foto Sospese</h3>
-                    <p>Foto temporaneamente sospese in attesa di revisione</p>
-                    <div id="suspendedPhotosList">
-                        <div class="loading">Caricamento foto sospese...</div>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Statistiche Moderazione</h3>
-                    <div id="moderationStats">
-                        <div class="loading">Caricamento statistiche...</div>
-                    </div>
-                </div>
-                
                 <div class="action-buttons">
                     <button class="btn btn-secondary logout-btn" onclick="logoutModeration()">
                         🚪 Esci dalla Moderazione
@@ -1231,16 +1065,6 @@
                     </button>
                     <input type="file" id="importFile" accept=".json" style="display: none;">
                 </div>
-            </div>
-            
-            <div class="settings-section">
-                <h3>Scorciatoie da Tastiera</h3>
-                <p>Usa queste scorciatoie durante la votazione:</p>
-                <ul>
-                    <li><strong>Freccia Sinistra / A:</strong> Vota PASS</li>
-                    <li><strong>Freccia Destra / D:</strong> Vota SMASH</li>
-                    <li><strong>Spazio:</strong> Salta foto</li>
-                </ul>
             </div>
             
             <div class="settings-section">
@@ -1271,43 +1095,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal per cambio password -->
-    <div class="modal" id="changePasswordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🔄 Cambia Password Moderazione</h3>
-                <button class="close-modal" onclick="closeModal('changePasswordModal')">×</button>
-            </div>
-            <div>
-                <p>Vecchia Password:</p>
-                <input type="password" id="oldPasswordInput" class="password-input" placeholder="Vecchia password">
-                
-                <p>Nuova Password:</p>
-                <input type="password" id="newPasswordInput" class="password-input" placeholder="Nuova password">
-                
-                <p>Conferma Nuova Password:</p>
-                <input type="password" id="confirmPasswordInput" class="password-input" placeholder="Conferma password">
-                
-                <button class="btn btn-primary" onclick="handlePasswordChange()" style="width: 100%; margin-top: 15px;">
-                    🔄 Cambia Password
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal per informazioni foto -->
-    <div class="modal" id="photoInfoModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Informazioni Foto</h3>
-                <button class="close-modal" onclick="closeModal('photoInfoModal')">×</button>
-            </div>
-            <div id="photoInfoContent">
-                <!-- Contenuto dinamico -->
-            </div>
-        </div>
-    </div>
     
     <!-- Modal per segnalazione -->
     <div class="modal" id="reportModal">
@@ -1333,11 +1120,10 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // 🔥 CONFIGURAZIONE SUPABASE
+        // CONFIGURAZIONE SUPABASE
         const SUPABASE_URL = 'https://rreyuxxnyhhahwkjxfiv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJyZXl1eHhueWhoYWh3a2p4Zml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMjIyNDgsImV4cCI6MjA3ODU5ODI0OH0.F_ZnqK10o8h-IY23_g9RzkPHqQVbpAvjQmw0awlApBE';
         
-        // Inizializza Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Variabili globali
@@ -1352,13 +1138,9 @@
         let achievements = JSON.parse(localStorage.getItem('achievements') || '{}');
         let currentPhotoForReport = null;
         
-        // 🔐 SISTEMA PASSWORD MODERAZIONE
+        // Sistema moderazione
         let moderationAttempts = 3;
         let isModerationAuthenticated = false;
-        let lastAttemptTime = 0;
-        const ATTEMPT_COOLDOWN = 30000; // 30 secondi
-
-        // Soglia per sospensione automatica
         const REPORT_THRESHOLD = 3;
         
         // Inizializza l'applicazione
@@ -1369,26 +1151,19 @@
             loadStats();
         });
         
-        // 🔧 CORREZIONE 1: VALIDAZIONE FILE MIGLIORATA
+        // FUNZIONI PRINCIPALI CORRETTE
         function handleFileSelection(file) {
             if (!file) {
                 showNotification('Nessun file selezionato!', true);
                 return;
             }
             
-            // Controlla il tipo MIME
             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
             const fileExtension = file.name.toLowerCase().split('.').pop();
             const allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
             
-            // 🔥 CONTROLLO RINFORZATO: Blocca GIF e video
             if (file.type === 'image/gif') {
-                showNotification('Le GIF animate non sono permesse! Carica solo immagini statiche.', true);
-                return;
-            }
-            
-            if (file.type.startsWith('video/')) {
-                showNotification('I video non sono permessi! Carica solo immagini.', true);
+                showNotification('Le GIF animate non sono permesse!', true);
                 return;
             }
             
@@ -1402,40 +1177,25 @@
                 return;
             }
             
-            // Controllo aggiuntivo: verifica che non sia un file eseguibile mascherato
-            if (file.type === 'application/octet-stream' || !file.type.startsWith('image/')) {
-                showNotification('Tipo di file non valido!', true);
-                return;
-            }
-            
             selectedFile = file;
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Controllo finale: verifica che sia davvero un'immagine
                 const img = new Image();
                 img.onload = function() {
                     const previewImage = document.getElementById('previewImage');
                     previewImage.src = e.target.result;
                     previewImage.style.display = 'block';
-                    
-                    // Abilita pulsante Avanti
                     document.getElementById('nextToStep3').disabled = false;
                 };
                 img.onerror = function() {
                     showNotification('Il file selezionato non è un\'immagine valida!', true);
-                    return;
                 };
                 img.src = e.target.result;
-            };
-            reader.onerror = function() {
-                showNotification('Errore nella lettura del file!', true);
-                return;
             };
             reader.readAsDataURL(file);
         }
 
-        // 🔧 CORREZIONE 2: BARRA PROGRESSO PASS (ROSSA) FUNZIONANTE
         function showCurrentPhoto() {
             const singlePhotoView = document.getElementById('singlePhotoView');
             
@@ -1454,7 +1214,6 @@
             const smashPercentage = totalVotes > 0 ? (photo.smash_count / totalVotes) * 100 : 0;
             const passPercentage = totalVotes > 0 ? (photo.pass_count / totalVotes) * 100 : 0;
             
-            // Controlla se l'utente ha già votato questa foto
             const userVote = voteHistory[photo.id];
             
             singlePhotoView.innerHTML = `
@@ -1499,18 +1258,85 @@
                     </div>
                 `}
             `;
-            
-            // Aggiorna statistiche in tempo reale
-            updateLiveStats();
         }
 
-        // 🔧 CORREZIONE 3: SISTEMA DI REPORT COMPLETO PER MODERATORI
+        // SISTEMA DI SEGNALAZIONE CORRETTO
+        async function submitReport() {
+            if (!currentPhotoForReport) return;
+            
+            const reason = document.getElementById('reportReason').value;
+            const details = document.getElementById('reportDetails').value;
+            
+            try {
+                // Recupera i dati attuali della foto
+                const { data: currentPhoto, error: fetchError } = await supabase
+                    .from('photos')
+                    .select('report_count, status')
+                    .eq('id', currentPhotoForReport)
+                    .single();
+                
+                if (fetchError) throw new Error('Foto non trovata');
+                
+                // Salva il report
+                const { error: reportError } = await supabase
+                    .from('reports')
+                    .insert([{
+                        photo_id: currentPhotoForReport,
+                        reason: reason,
+                        details: details,
+                        reported_at: new Date().toISOString()
+                    }]);
+                
+                if (reportError) throw new Error('Errore nel salvataggio della segnalazione');
+                
+                // Incrementa il conteggio
+                const newReportCount = (currentPhoto.report_count || 0) + 1;
+                const { error: updateError } = await supabase
+                    .from('photos')
+                    .update({ report_count: newReportCount })
+                    .eq('id', currentPhotoForReport);
+                
+                if (updateError) throw new Error('Errore nell\'aggiornamento del conteggio');
+                
+                showNotification('Segnalazione inviata con successo!', false, 'success');
+                closeModal('reportModal');
+                
+                // Sospensione automatica
+                if (newReportCount >= REPORT_THRESHOLD && currentPhoto.status === 'active') {
+                    await suspendPhoto(currentPhotoForReport);
+                    showNotification('Foto sospesa automaticamente per troppe segnalazioni', false, 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Errore durante la segnalazione:', error);
+                showNotification(error.message || 'Errore durante la segnalazione. Riprova.', true);
+            }
+        }
+
+        async function suspendPhoto(photoId) {
+            try {
+                const { error } = await supabase
+                    .from('photos')
+                    .update({ status: 'suspended' })
+                    .eq('id', photoId);
+                
+                if (error) throw error;
+                
+                showNotification('Foto sospesa con successo!', false, 'warning');
+                
+            } catch (error) {
+                console.error('Errore durante la sospensione:', error);
+                showNotification('Errore durante la sospensione. Riprova.', true);
+            }
+        }
+
         async function loadReportedPhotos() {
+            if (!isModerationAuthenticated) return;
+            
             const reportedPhotosList = document.getElementById('reportedPhotosList');
             reportedPhotosList.innerHTML = '<div class="loading">Caricamento foto segnalate...</div>';
             
             try {
-                // Ottieni le foto con report_count > 0 e status active
                 const { data: photos, error } = await supabase
                     .from('photos')
                     .select('*')
@@ -1525,26 +1351,7 @@
                     return;
                 }
                 
-                // Per ogni foto, carica i dettagli dei report
-                const photosWithReports = await Promise.all(
-                    photos.map(async (photo) => {
-                        const { data: reports } = await supabase
-                            .from('reports')
-                            .select('*')
-                            .eq('photo_id', photo.id)
-                            .order('reported_at', { ascending: false });
-                        
-                        return { ...photo, reports: reports || [] };
-                    })
-                );
-                
-                reportedPhotosList.innerHTML = photosWithReports.map(photoWithReports => {
-                    const photo = photoWithReports;
-                    const reports = photoWithReports.reports;
-                    const totalVotes = photo.smash_count + photo.pass_count;
-                    const smashPercentage = totalVotes > 0 ? 
-                        Math.round((photo.smash_count / totalVotes) * 100) : 0;
-                    
+                reportedPhotosList.innerHTML = photos.map(photo => {
                     return `
                         <div class="reported-photo">
                             <div style="display: flex; align-items: center; margin-bottom: 15px;">
@@ -1553,29 +1360,13 @@
                                     <h4>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</h4>
                                     <p><strong>Segnalazioni:</strong> ${photo.report_count || 0}</p>
                                     <p><strong>Smash:</strong> ${photo.smash_count} | <strong>Pass:</strong> ${photo.pass_count}</p>
-                                    <p><strong>Caricata il:</strong> ${new Date(photo.created_at).toLocaleDateString()}</p>
                                 </div>
-                            </div>
-                            
-                            <!-- DETTAGLI DEI REPORT -->
-                            <div class="report-details" style="display: ${reports.length > 0 ? 'block' : 'none'}">
-                                <h5>📋 Dettagli Segnalazioni (${reports.length})</h5>
-                                ${reports.map(report => `
-                                    <div class="report-item">
-                                        <p><strong>Motivo:</strong> ${getReportReasonText(report.reason)}</p>
-                                        ${report.details ? `<p><strong>Dettagli:</strong> ${report.details}</p>` : ''}
-                                        <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                                            Segnalato il: ${new Date(report.reported_at).toLocaleString()}
-                                        </p>
-                                    </div>
-                                `).join('')}
                             </div>
                             
                             <div class="admin-actions">
                                 <button class="admin-btn approve-btn" onclick="approvePhoto('${photo.id}')">✅ Approva</button>
                                 <button class="admin-btn reject-btn" onclick="rejectPhoto('${photo.id}')">❌ Rimuovi</button>
                                 <button class="btn btn-secondary" onclick="suspendPhoto('${photo.id}')">⏸️ Sospendi</button>
-                                <button class="btn btn-secondary" onclick="showAllReports('${photo.id}')">📋 Tutti i Report</button>
                             </div>
                         </div>
                     `;
@@ -1583,434 +1374,80 @@
                 
             } catch (error) {
                 console.error('Errore nel caricamento delle foto segnalate:', error);
-                reportedPhotosList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento delle foto segnalate</p></div>';
+                reportedPhotosList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento</p></div>';
             }
         }
 
-        // 🔧 CORREZIONE 4: FUNZIONE PER MOSTRARE TUTTI I REPORT DI UNA FOTO
-        async function showAllReports(photoId) {
+        async function approvePhoto(photoId) {
             try {
-                const { data: photo, error: photoError } = await supabase
+                const { error } = await supabase
                     .from('photos')
-                    .select('*')
-                    .eq('id', photoId)
-                    .single();
+                    .update({ report_count: 0, status: 'active' })
+                    .eq('id', photoId);
                 
-                if (photoError) throw photoError;
+                if (error) throw error;
                 
-                const { data: reports, error: reportsError } = await supabase
-                    .from('reports')
-                    .select('*')
-                    .eq('photo_id', photoId)
-                    .order('reported_at', { ascending: false });
-                
-                if (reportsError) throw reportsError;
-                
-                const modal = document.createElement('div');
-                modal.className = 'modal';
-                modal.style.display = 'flex';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>📋 Tutte le Segnalazioni</h3>
-                            <button class="close-modal" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
-                        </div>
-                        <div>
-                            <div style="text-align: center; margin-bottom: 15px;">
-                                <img src="${photo.image_url}" style="max-width: 200px; max-height: 200px; border-radius: 10px; margin-bottom: 10px;" onerror="this.style.display='none'">
-                                <p><strong>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</strong></p>
-                            </div>
-                            
-                            <h4>Segnalazioni (${reports.length})</h4>
-                            ${reports.length > 0 ? 
-                                reports.map(report => `
-                                    <div class="report-item" style="margin-bottom: 10px; padding: 10px; border-radius: 5px; background: #f8f9fa;">
-                                        <p><strong>Motivo:</strong> ${getReportReasonText(report.reason)}</p>
-                                        ${report.details ? `<p><strong>Dettagli utente:</strong> "${report.details}"</p>` : '<p><em>Nessun dettaglio aggiuntivo</em></p>'}
-                                        <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                                            Segnalato il: ${new Date(report.reported_at).toLocaleString()}
-                                        </p>
-                                    </div>
-                                `).join('') 
-                                : '<p>Nessuna segnalazione trovata.</p>'
-                            }
-                            
-                            <div style="margin-top: 20px; text-align: center;">
-                                <button class="btn btn-primary" onclick="this.parentElement.parentElement.parentElement.remove()">
-                                    Chiudi
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.appendChild(modal);
+                showNotification('Foto approvata con successo!');
+                loadReportedPhotos();
                 
             } catch (error) {
-                console.error('Errore nel caricamento dei report:', error);
-                showNotification('Errore nel caricamento dei report dettagliati', true);
+                console.error('Errore durante l\'approvazione:', error);
+                showNotification('Errore durante l\'approvazione. Riprova.', true);
             }
         }
 
-        // 🔧 CORREZIONE 5: FUNZIONE PER TRADURRE I MOTIVI DEI REPORT
-        function getReportReasonText(reason) {
-            const reasons = {
-                'inappropriate': '🚫 Contenuto inappropriato',
-                'sexual': '🔞 Contenuto sessuale',
-                'fake': '🤥 Foto non reale/falsa',
-                'other': '❓ Altro'
-            };
-            return reasons[reason] || reason;
-        }
-
-        // 🔧 CORREZIONE 6: INVIO REPORT MIGLIORATO
-        async function submitReport() {
-            if (!currentPhotoForReport) return;
-            
-            const reason = document.getElementById('reportReason').value;
-            const details = document.getElementById('reportDetails').value;
+        async function rejectPhoto(photoId) {
+            if (!confirm('Sei sicuro di voler eliminare questa foto?')) return;
             
             try {
-                // PRIMA: Salva i dettagli del report nella tabella reports
-                const { error: reportError } = await supabase
-                    .from('reports')
-                    .insert([
-                        {
-                            photo_id: currentPhotoForReport,
-                            reason: reason,
-                            details: details,
-                            reported_at: new Date().toISOString()
-                        }
-                    ]);
-                
-                if (reportError) throw reportError;
-                
-                // SECONDA: Incrementa il conteggio dei report nella foto
                 const { data: photo, error: fetchError } = await supabase
                     .from('photos')
-                    .select('report_count')
-                    .eq('id', currentPhotoForReport)
+                    .select('image_url')
+                    .eq('id', photoId)
                     .single();
                 
                 if (fetchError) throw fetchError;
                 
-                const { error: updateError } = await supabase
-                    .from('photos')
-                    .update({ 
-                        report_count: (photo.report_count || 0) + 1 
-                    })
-                    .eq('id', currentPhotoForReport);
+                const imagePath = photo.image_url.split('/').pop();
                 
-                if (updateError) throw updateError;
-                
-                showNotification('Segnalazione inviata con successo! I dettagli sono stati salvati.');
-                closeModal('reportModal');
-                
-                // Sospendi automaticamente se supera la soglia
-                if ((photo.report_count || 0) + 1 >= REPORT_THRESHOLD) {
-                    await suspendPhoto(currentPhotoForReport);
-                    showNotification('Foto sospesa automaticamente per troppe segnalazioni', false, 'warning');
+                if (imagePath && imagePath !== 'undefined') {
+                    await supabase.storage.from('photo-uploads').remove([imagePath]);
                 }
+                
+                await supabase.from('reports').delete().eq('photo_id', photoId);
+                await supabase.from('photos').delete().eq('id', photoId);
+                
+                showNotification('Foto eliminata definitivamente!');
+                loadReportedPhotos();
                 
             } catch (error) {
-                console.error('Errore durante la segnalazione:', error);
-                showNotification('Errore durante la segnalazione. Riprova.', true);
+                console.error('Errore durante l\'eliminazione:', error);
+                showNotification('Errore durante l\'eliminazione. Riprova.', true);
             }
         }
 
-        // 🔧 CORREZIONE 7: CARICAMENTO FOTO SOSPESE CON REPORT
-        async function loadSuspendedPhotos() {
-            const suspendedPhotosList = document.getElementById('suspendedPhotosList');
-            suspendedPhotosList.innerHTML = '<div class="loading">Caricamento foto sospese...</div>';
-            
-            try {
-                // Ottieni le foto con status = 'suspended'
-                const { data: photos, error } = await supabase
-                    .from('photos')
-                    .select('*')
-                    .eq('status', 'suspended')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                if (!photos || photos.length === 0) {
-                    suspendedPhotosList.innerHTML = '<div class="empty-state"><p>Nessuna foto sospesa</p></div>';
-                    return;
-                }
-                
-                // Per ogni foto sospesa, carica i report
-                const photosWithReports = await Promise.all(
-                    photos.map(async (photo) => {
-                        const { data: reports } = await supabase
-                            .from('reports')
-                            .select('*')
-                            .eq('photo_id', photo.id)
-                            .order('reported_at', { ascending: false });
-                        
-                        return { ...photo, reports: reports || [] };
-                    })
-                );
-                
-                suspendedPhotosList.innerHTML = photosWithReports.map(photoWithReports => {
-                    const photo = photoWithReports;
-                    const reports = photoWithReports.reports;
-                    const totalVotes = photo.smash_count + photo.pass_count;
-                    const smashPercentage = totalVotes > 0 ? 
-                        Math.round((photo.smash_count / totalVotes) * 100) : 0;
-                    
-                    return `
-                        <div class="reported-photo">
-                            <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                                <img src="${photo.image_url}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin-right: 15px;" onerror="this.style.display='none'">
-                                <div>
-                                    <h4>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'} <span class="suspended-badge">SOSPESA</span></h4>
-                                    <p><strong>Segnalazioni:</strong> ${photo.report_count || 0}</p>
-                                    <p><strong>Smash:</strong> ${photo.smash_count} | <strong>Pass:</strong> ${photo.pass_count}</p>
-                                    <p><strong>Caricata il:</strong> ${new Date(photo.created_at).toLocaleDateString()}</p>
-                                </div>
-                            </div>
-                            
-                            <!-- DETTAGLI DEI REPORT -->
-                            <div class="report-details" style="display: ${reports.length > 0 ? 'block' : 'none'}">
-                                <h5>📋 Ultime Segnalazioni</h5>
-                                ${reports.slice(0, 2).map(report => `
-                                    <div class="report-item">
-                                        <p><strong>Motivo:</strong> ${getReportReasonText(report.reason)}</p>
-                                        ${report.details ? `<p><strong>Dettagli:</strong> ${report.details}</p>` : ''}
-                                    </div>
-                                `).join('')}
-                                ${reports.length > 2 ? 
-                                    `<p style="text-align: center; margin-top: 10px;">
-                                        <button class="btn btn-secondary" onclick="showAllReports('${photo.id}')" style="padding: 5px 10px; font-size: 12px;">
-                                            Vedi tutte le ${reports.length} segnalazioni
-                                        </button>
-                                    </p>` 
-                                    : ''
-                                }
-                            </div>
-                            
-                            <div class="admin-actions">
-                                <button class="admin-btn approve-btn" onclick="approvePhoto('${photo.id}')">✅ Riattiva</button>
-                                <button class="admin-btn reject-btn" onclick="rejectPhoto('${photo.id}')">❌ Elimina</button>
-                                <button class="btn btn-secondary" onclick="showAllReports('${photo.id}')">📋 Tutti i Report</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-            } catch (error) {
-                console.error('Errore nel caricamento delle foto sospese:', error);
-                suspendedPhotosList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento delle foto sospese</p></div>';
-            }
-        }
-
-        // 🔐 FUNZIONI DI VERIFICA PASSWORD CON SUPABASE
-        async function verifyPasswordWithSupabase(password) {
-            try {
-                console.log('Verifica password in corso...');
-                
-                // Chiama la funzione PostgreSQL
-                const { data, error } = await supabase
-                    .rpc('verify_moderation_access', { input_key: password });
-                
-                if (error) {
-                    console.error('Errore Supabase:', error);
-                    return false;
-                }
-                
-                console.log('Risposta Supabase:', data);
-                return data.valid;
-                
-            } catch (error) {
-                console.error('Errore nella verifica password:', error);
-                return false;
-            }
-        }
-
-        async function checkModerationPassword(inputPassword) {
-            const now = Date.now();
-            
-            // Controlla cooldown
-            if (moderationAttempts <= 0 && (now - lastAttemptTime) < ATTEMPT_COOLDOWN) {
-                const remainingTime = Math.ceil((ATTEMPT_COOLDOWN - (now - lastAttemptTime)) / 1000);
-                showNotification(`Attendi ${remainingTime} secondi prima di riprovare`, true);
-                return false;
-            }
-            
-            // Verifica la password con Supabase
-            const isValid = await verifyPasswordWithSupabase(inputPassword);
-            
-            if (!isValid) {
-                moderationAttempts--;
-                lastAttemptTime = now;
-                
-                if (moderationAttempts <= 0) {
-                    showNotification('Accesso bloccato. Attendi 30 secondi.', true);
-                    setTimeout(() => {
-                        moderationAttempts = 3;
-                        showNotification('Puoi riprovare ora', false, 'info');
-                    }, ATTEMPT_COOLDOWN);
-                } else {
-                    showNotification(`Password errata! Tentativi rimanenti: ${moderationAttempts}`, true);
-                }
-            } else {
-                moderationAttempts = 3; // Reset tentativi
-                isModerationAuthenticated = true;
-                showNotification('Accesso moderazione consentito!', false, 'success');
-            }
-            
-            return isValid;
-        }
-
-        // 🔧 FUNZIONE PER CAMBIARE PASSWORD (SOLO SE AUTENTICATO)
-        async function changeModerationPassword(oldPassword, newPassword) {
-            if (!isModerationAuthenticated) {
-                showNotification('Devi prima accedere alla moderazione!', true);
-                return false;
-            }
-            
-            try {
-                // Verifica la vecchia password
-                const isOldValid = await verifyPasswordWithSupabase(oldPassword);
-                if (!isOldValid) {
-                    showNotification('Vecchia password errata!', true);
-                    return false;
-                }
-                
-                // Aggiorna con la nuova password
-                const { error } = await supabase
-                    .from('moderation_access')
-                    .update({ 
-                        access_key: newPassword,
-                        last_used: new Date().toISOString()
-                    })
-                    .eq('access_key', oldPassword);
-                
-                if (error) throw error;
-                
-                showNotification('Password cambiata con successo!', false, 'success');
-                return true;
-                
-            } catch (error) {
-                console.error('Errore nel cambio password:', error);
-                showNotification('Errore nel cambio password', true);
-                return false;
-            }
-        }
-
-        // 🎯 GESTIONE ACCESSO MODERAZIONE
-        function showPasswordModal() {
-            document.getElementById('passwordModal').style.display = 'flex';
-            document.getElementById('attemptsInfo').textContent = `Tentativi rimanenti: ${moderationAttempts}`;
-            document.getElementById('moderationPasswordInput').value = '';
-            document.getElementById('moderationPasswordInput').focus();
-        }
-
-        async function handlePasswordSubmit() {
-            const passwordInput = document.getElementById('moderationPasswordInput');
-            const password = passwordInput.value;
-            
-            if (!password) {
-                showNotification('Inserisci una password!', true);
-                return;
-            }
-            
-            const isValid = await checkModerationPassword(password);
-            
-            if (isValid) {
-                // Chiudi il modal
-                closeModal('passwordModal');
-                
-                // Mostra il tab moderazione
-                switchTab('moderation');
-            } else {
-                // Aggiorna il contatore nel modal
-                const attemptsInfo = document.getElementById('attemptsInfo');
-                if (attemptsInfo) {
-                    attemptsInfo.textContent = `Tentativi rimanenti: ${moderationAttempts}`;
-                }
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        }
-
-        function showChangePasswordModal() {
-            document.getElementById('changePasswordModal').style.display = 'flex';
-            document.getElementById('oldPasswordInput').value = '';
-            document.getElementById('newPasswordInput').value = '';
-            document.getElementById('confirmPasswordInput').value = '';
-        }
-
-        async function handlePasswordChange() {
-            const oldPassword = document.getElementById('oldPasswordInput').value;
-            const newPassword = document.getElementById('newPasswordInput').value;
-            const confirmPassword = document.getElementById('confirmPasswordInput').value;
-            
-            if (!oldPassword || !newPassword || !confirmPassword) {
-                showNotification('Compila tutti i campi!', true);
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                showNotification('Le nuove password non coincidono!', true);
-                return;
-            }
-            
-            if (newPassword.length < 4) {
-                showNotification('La password deve essere di almeno 4 caratteri!', true);
-                return;
-            }
-            
-            const success = await changeModerationPassword(oldPassword, newPassword);
-            
-            if (success) {
-                closeModal('changePasswordModal');
-            }
-        }
-
-        // 🚪 FUNZIONE PER LOGOUT MODERAZIONE
-        function logoutModeration() {
-            isModerationAuthenticated = false;
-            showNotification('Disconnesso dalla moderazione', false, 'info');
-            
-            if (document.getElementById('moderation-tab').classList.contains('active')) {
-                switchTab('upload');
-            }
-        }
-
-        // Gestione passaggi
+        // FUNZIONI DI BASE
         function goToStep(step) {
-            // Nascondi tutti i contenuti dei passaggi
             document.querySelectorAll('.step-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            // Aggiorna indicatori dei passaggi
             document.querySelectorAll('.step').forEach((stepEl, index) => {
                 stepEl.classList.remove('active', 'completed');
-                if (index + 1 < step) {
-                    stepEl.classList.add('completed');
-                } else if (index + 1 === step) {
-                    stepEl.classList.add('active');
-                }
+                if (index + 1 < step) stepEl.classList.add('completed');
+                else if (index + 1 === step) stepEl.classList.add('active');
             });
             
-            // Mostra il contenuto del passaggio corrente
             document.getElementById(`step${step}-content`).classList.add('active');
             
-            // Aggiorna i dati nel passaggio 3
             if (step === 3) {
                 document.getElementById('confirmPreviewImage').src = document.getElementById('previewImage').src;
-                document.getElementById('confirm-gender').textContent = 
-                    selectedGender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
+                document.getElementById('confirm-gender').textContent = selectedGender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
             }
         }
         
-        // Selezione genere per upload
         function selectGender(gender) {
             selectedGender = gender;
-            
-            // Aggiorna pulsanti
             document.querySelectorAll('#step1-content .gender-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -2021,19 +1458,12 @@
                 document.getElementById('femaleBtn').classList.add('active');
             }
             
-            // Abilita pulsante Avanti
             document.getElementById('nextToStep2').disabled = false;
-            
-            // Aggiorna testo nel passaggio 2
-            document.getElementById('current-gender').textContent = 
-                gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
+            document.getElementById('current-gender').textContent = gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza';
         }
         
-        // Selezione genere per votazione
         function selectVoteGender(gender) {
             currentVoteGender = gender;
-            
-            // Aggiorna pulsanti
             document.querySelectorAll('.gender-selection-vote .gender-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -2044,20 +1474,14 @@
                 document.getElementById('voteFemaleBtn').classList.add('active');
             }
             
-            // Ricarica le foto per il genere selezionato
             loadPhotosForVoting();
         }
         
-        // Carica foto per la votazione
         async function loadPhotosForVoting() {
             const singlePhotoView = document.getElementById('singlePhotoView');
-            
-            // Mostra il caricamento
             singlePhotoView.innerHTML = '<div class="loading">Caricamento foto in corso...</div>';
 
             try {
-                console.log('Caricamento foto per genere:', currentVoteGender);
-                
                 const { data: photos, error } = await supabase
                     .from('photos')
                     .select('*')
@@ -2065,31 +1489,23 @@
                     .eq('status', 'active')
                     .limit(10);
 
-                if (error) {
-                    console.error('Errore Supabase:', error);
-                    throw error;
-                }
-
-                console.log('Foto caricate:', photos);
+                if (error) throw error;
 
                 if (!photos || photos.length === 0) {
                     singlePhotoView.innerHTML = `
                         <div class="empty-state">
                             <p>Nessuna foto disponibile per i ${currentVoteGender === 'male' ? 'ragazzi' : 'ragazze'}.</p>
-                            <p>Perché non carichi tu la prima foto?</p>
                         </div>
                     `;
                     return;
                 }
 
-                // Filtra le foto già votate
                 const unvotedPhotos = photos.filter(photo => !voteHistory[photo.id]);
                 
                 if (unvotedPhotos.length === 0) {
                     singlePhotoView.innerHTML = `
                         <div class="empty-state">
-                            <p>Hai già votato tutte le foto disponibili per i ${currentVoteGender === 'male' ? 'ragazzi' : 'ragazze'}!</p>
-                            <p>Cambia genere o torna più tardi per nuove foto.</p>
+                            <p>Hai già votato tutte le foto disponibili!</p>
                         </div>
                     `;
                     return;
@@ -2104,49 +1520,37 @@
                 singlePhotoView.innerHTML = `
                     <div class="empty-state">
                         <p>Errore nel caricamento delle foto.</p>
-                        <p>Controlla la connessione e riprova.</p>
                     </div>
                 `;
             }
         }
         
-        // Vota la foto corrente
         async function voteCurrentPhoto(vote) {
             if (currentPhotoIndex >= currentPhotos.length) return;
             
             const photo = currentPhotos[currentPhotoIndex];
-            
-            // Applica effetto visivo
             const photoContainer = document.querySelector('.photo-container');
+            
             if (vote === 'smash') {
                 photoContainer.classList.add('smash-effect');
             } else {
                 photoContainer.classList.add('pass-effect');
             }
             
-            // Salva il voto nella cronologia locale
             voteHistory[photo.id] = vote;
             localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
             
             try {
-                // Aggiorna il conteggio nel database
                 const updateField = vote === 'smash' ? 'smash_count' : 'pass_count';
                 const { error } = await supabase
                     .from('photos')
-                    .update({ 
-                        [updateField]: photo[updateField] + 1 
-                    })
+                    .update({ [updateField]: photo[updateField] + 1 })
                     .eq('id', photo.id);
                 
                 if (error) throw error;
                 
-                // Aggiorna le statistiche
-                updateLiveStats();
-                
-                // Mostra notifica
                 showNotification(`Hai votato: ${vote === 'smash' ? '😍 SMASH' : '😐 PASS'}`, false, 'info');
                 
-                // Passa alla prossima foto dopo un breve delay
                 setTimeout(() => {
                     currentPhotoIndex++;
                     showCurrentPhoto();
@@ -2158,25 +1562,6 @@
             }
         }
         
-        // Aggiorna statistiche in tempo reale
-        function updateLiveStats() {
-            let totalSmash = 0;
-            let totalPass = 0;
-            
-            currentPhotos.forEach(photo => {
-                totalSmash += photo.smash_count;
-                totalPass += photo.pass_count;
-            });
-            
-            const liveStats = document.getElementById('liveStats');
-            liveStats.style.display = 'flex';
-            
-            document.getElementById('liveSmash').textContent = totalSmash;
-            document.getElementById('livePass').textContent = totalPass;
-            document.getElementById('liveTotal').textContent = totalSmash + totalPass;
-        }
-        
-        // Carica la cronologia voti
         async function loadVoteHistory() {
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '<div class="loading">Caricamento cronologia...</div>';
@@ -2189,7 +1574,6 @@
                     return;
                 }
 
-                // Carica i dettagli delle foto votate
                 const photoIds = historyEntries.map(([photoId]) => photoId);
                 const { data: photos, error } = await supabase
                     .from('photos')
@@ -2198,7 +1582,6 @@
 
                 if (error) throw error;
 
-                // Crea una mappa per accesso rapido
                 const photosMap = {};
                 if (photos) {
                     photos.forEach(photo => {
@@ -2206,7 +1589,6 @@
                     });
                 }
 
-                // Filtra in base al filtro corrente
                 const filteredEntries = historyEntries.filter(([photoId, vote]) => {
                     if (currentHistoryFilter === 'all') return true;
                     return vote === currentHistoryFilter;
@@ -2246,9 +1628,6 @@
                             <div class="history-vote ${vote}">
                                 ${vote === 'smash' ? 'SMASH' : 'PASS'}
                             </div>
-                            <button class="change-vote-btn" onclick="changeVote('${photoId}')">
-                                Cambia
-                            </button>
                         </div>
                     `;
                 }).join('');
@@ -2259,68 +1638,15 @@
             }
         }
         
-        // Cambia voto nella cronologia
-        async function changeVote(photoId) {
-            if (!confirm('Vuoi cambiare il tuo voto per questa foto?')) {
-                return;
-            }
-
-            try {
-                const currentVote = voteHistory[photoId];
-                const { data: photo, error: fetchError } = await supabase
-                    .from('photos')
-                    .select('*')
-                    .eq('id', photoId)
-                    .single();
-
-                if (fetchError) throw fetchError;
-
-                // Calcola il nuovo voto (inverti)
-                const newVote = currentVote === 'smash' ? 'pass' : 'smash';
-                
-                // Aggiorna il database
-                const updateField = newVote === 'smash' ? 'smash_count' : 'pass_count';
-                const decrementField = newVote === 'smash' ? 'pass_count' : 'smash_count';
-
-                const { error: updateError } = await supabase
-                    .from('photos')
-                    .update({ 
-                        [updateField]: photo[updateField] + 1,
-                        [decrementField]: Math.max(0, photo[decrementField] - 1)
-                    })
-                    .eq('id', photoId);
-
-                if (updateError) throw updateError;
-
-                // Aggiorna la cronologia locale
-                voteHistory[photoId] = newVote;
-                localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
-
-                showNotification(`Voto cambiato in: ${newVote === 'smash' ? '😍 SMASH' : '😐 PASS'}`, false, 'info');
-                
-                // Ricarica la cronologia
-                loadVoteHistory();
-
-            } catch (error) {
-                console.error('Errore nel cambiare il voto:', error);
-                showNotification('Errore nel cambiare il voto. Riprova.', true);
-            }
-        }
-        
-        // Filtra la cronologia
         function filterHistory(filter) {
             currentHistoryFilter = filter;
-            
-            // Aggiorna pulsanti filtro
             document.querySelectorAll('.history-filter .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-            
             loadVoteHistory();
         }
         
-        // Carica la classifica
         async function loadLeaderboard() {
             const leaderboardList = document.getElementById('leaderboardList');
             leaderboardList.innerHTML = '<div class="loading">Caricamento classifica...</div>';
@@ -2348,8 +1674,7 @@
                 
                 leaderboardList.innerHTML = photos.map((photo, index) => {
                     const totalVotes = photo.smash_count + photo.pass_count;
-                    const smashPercentage = totalVotes > 0 ? 
-                        Math.round((photo.smash_count / totalVotes) * 100) : 0;
+                    const smashPercentage = totalVotes > 0 ? Math.round((photo.smash_count / totalVotes) * 100) : 0;
                     
                     return `
                         <div class="leaderboard-item">
@@ -2376,22 +1701,16 @@
             }
         }
         
-        // Filtra la classifica
         function filterLeaderboard(filter) {
             currentLeaderboardFilter = filter;
-            
-            // Aggiorna pulsanti filtro
             document.querySelectorAll('.history-filter .filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-            
             loadLeaderboard();
         }
         
-        // Carica achievement
         function loadAchievements() {
-            // Achievement di base
             const defaultAchievements = {
                 first_vote: { name: 'Primo Voto', description: 'Effettua il tuo primo voto', unlocked: false, icon: '🎯' },
                 five_votes: { name: 'Votante Attivo', description: 'Effettua 5 voti', unlocked: false, icon: '🏆' },
@@ -2399,12 +1718,10 @@
                 first_upload: { name: 'Modello Emergente', description: 'Carica la tua prima foto', unlocked: false, icon: '📸' }
             };
             
-            // Unisci con achievement esistenti
             achievements = { ...defaultAchievements, ...achievements };
             localStorage.setItem('achievements', JSON.stringify(achievements));
         }
         
-        // Mostra achievement
         function loadAchievementsDisplay() {
             const achievementsList = document.getElementById('achievementsList');
             
@@ -2422,15 +1739,12 @@
             `).join('');
         }
         
-        // Carica statistiche
         async function loadStats() {
             try {
-                // Conta foto totali
                 const { data: photos, error: photosError } = await supabase
                     .from('photos')
                     .select('id', { count: 'exact' });
                 
-                // Conta voti totali
                 const { data: allPhotos, error: votesError } = await supabase
                     .from('photos')
                     .select('smash_count, pass_count');
@@ -2452,114 +1766,6 @@
             }
         }
         
-        // Approva una foto (rimuove le segnalazioni)
-        async function approvePhoto(photoId) {
-            try {
-                const { error } = await supabase
-                    .from('photos')
-                    .update({ 
-                        report_count: 0,
-                        status: 'active'
-                    })
-                    .eq('id', photoId);
-                
-                if (error) throw error;
-                
-                // Segna i report come risolti
-                await supabase
-                    .from('reports')
-                    .update({ resolved: true })
-                    .eq('photo_id', photoId);
-                
-                showNotification('Foto approvata con successo!');
-                
-                // Ricarica le liste
-                loadReportedPhotos();
-                loadSuspendedPhotos();
-                loadModerationStats();
-                
-            } catch (error) {
-                console.error('Errore durante l\'approvazione:', error);
-                showNotification('Errore durante l\'approvazione. Riprova.', true);
-            }
-        }
-        
-        // Sospendi una foto manualmente
-        async function suspendPhoto(photoId) {
-            try {
-                const { error } = await supabase
-                    .from('photos')
-                    .update({ 
-                        status: 'suspended'
-                    })
-                    .eq('id', photoId);
-                
-                if (error) throw error;
-                
-                showNotification('Foto sospesa con successo!');
-                
-                // Ricarica le liste
-                loadReportedPhotos();
-                loadSuspendedPhotos();
-                loadModerationStats();
-                
-            } catch (error) {
-                console.error('Errore durante la sospensione:', error);
-                showNotification('Errore durante la sospensione. Riprova.', true);
-            }
-        }
-        
-        // Rifiuta/rimuovi una foto
-        async function rejectPhoto(photoId) {
-            if (!confirm('Sei sicuro di voler rimuovere questa foto? Questa azione non può essere annullata.')) {
-                return;
-            }
-            
-            try {
-                // Prima ottieni l'URL dell'immagine per eliminarla dallo storage
-                const { data: photo, error: fetchError } = await supabase
-                    .from('photos')
-                    .select('image_url')
-                    .eq('id', photoId)
-                    .single();
-                
-                if (fetchError) throw fetchError;
-                
-                // Estrai il nome del file dall'URL
-                const imagePath = photo.image_url.split('/').pop();
-                
-                // Elimina l'immagine dallo storage
-                const { error: storageError } = await supabase.storage
-                    .from('photo-uploads')
-                    .remove([imagePath]);
-                
-                if (storageError) {
-                    console.error('Errore nell\'eliminazione dell\'immagine:', storageError);
-                    // Continua comunque con l'eliminazione del record
-                }
-                
-                // Elimina il record della foto
-                const { error } = await supabase
-                    .from('photos')
-                    .delete()
-                    .eq('id', photoId);
-                
-                if (error) throw error;
-                
-                showNotification('Foto rimossa con successo!');
-                
-                // Ricarica le liste
-                loadReportedPhotos();
-                loadSuspendedPhotos();
-                loadModerationStats();
-                
-            } catch (error) {
-                console.error('Errore durante la rimozione:', error);
-                showNotification('Errore durante la rimozione. Riprova.', true);
-            }
-        }
-        
-        // Upload foto
         async function uploadPhoto() {
             if (!selectedFile || !selectedGender) {
                 showNotification('Seleziona prima una foto e un genere!', true);
@@ -2571,41 +1777,34 @@
             uploadBtn.textContent = 'Caricamento...';
             
             try {
-                // Genera un nome file unico
                 const fileExt = selectedFile.name.split('.').pop();
                 const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
                 
-                // Upload dell'immagine a Supabase Storage
                 const { data: uploadData, error: uploadError } = await supabase.storage
                     .from('photo-uploads')
                     .upload(fileName, selectedFile);
                 
                 if (uploadError) throw uploadError;
                 
-                // Ottieni l'URL pubblico dell'immagine
                 const { data: urlData } = supabase.storage
                     .from('photo-uploads')
                     .getPublicUrl(fileName);
                 
-                // Salva i metadati della foto nel database
                 const { error: dbError } = await supabase
                     .from('photos')
-                    .insert([
-                        {
-                            image_url: urlData.publicUrl,
-                            gender: selectedGender,
-                            smash_count: 0,
-                            pass_count: 0,
-                            report_count: 0,
-                            status: 'active'
-                        }
-                    ]);
+                    .insert([{
+                        image_url: urlData.publicUrl,
+                        gender: selectedGender,
+                        smash_count: 0,
+                        pass_count: 0,
+                        report_count: 0,
+                        status: 'active'
+                    }]);
                 
                 if (dbError) throw dbError;
                 
                 showNotification('Foto caricata con successo!');
                 
-                // Resetta il form
                 setTimeout(() => {
                     selectedFile = null;
                     selectedGender = null;
@@ -2613,7 +1812,6 @@
                     document.getElementById('fileInput').value = '';
                     goToStep(1);
                     
-                    // Resetta pulsanti genere
                     document.querySelectorAll('#step1-content .gender-btn').forEach(btn => {
                         btn.classList.remove('active');
                     });
@@ -2630,16 +1828,13 @@
             }
         }
         
-        // Apri modal di segnalazione
         function openReportModal(photoId) {
             currentPhotoForReport = photoId;
             document.getElementById('reportModal').style.display = 'flex';
         }
         
-        // Funzioni per i modal
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
-            // Resetta i campi
             if (modalId === 'reportModal') {
                 document.getElementById('reportReason').value = 'inappropriate';
                 document.getElementById('reportDetails').value = '';
@@ -2667,59 +1862,81 @@
                 notification.classList.remove('show');
             }, 3000);
         }
-        
-        // Carica statistiche moderazione
-        async function loadModerationStats() {
-            const moderationStats = document.getElementById('moderationStats');
-            
+
+        // SISTEMA MODERAZIONE
+        async function verifyPasswordWithSupabase(password) {
             try {
-                // Conta foto attive
-                const { data: activePhotos, error: activeError } = await supabase
-                    .from('photos')
-                    .select('id', { count: 'exact' })
-                    .eq('status', 'active');
+                const { data, error } = await supabase
+                    .rpc('verify_moderation_access', { input_key: password });
                 
-                // Conta foto sospese
-                const { data: suspendedPhotos, error: suspendedError } = await supabase
-                    .from('photos')
-                    .select('id', { count: 'exact' })
-                    .eq('status', 'suspended');
-                
-                // Conta report totali
-                const { data: totalReports, error: reportsError } = await supabase
-                    .from('reports')
-                    .select('id', { count: 'exact' });
-                
-                if (activeError || suspendedError || reportsError) {
-                    throw new Error('Errore nel caricamento delle statistiche');
-                }
-                
-                moderationStats.innerHTML = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; text-align: center;">
-                        <div style="background: #d4edda; padding: 15px; border-radius: 8px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #155724;">${activePhotos.length || 0}</div>
-                            <div style="color: #155724;">Foto Attive</div>
-                        </div>
-                        <div style="background: #fff3cd; padding: 15px; border-radius: 8px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #856404;">${suspendedPhotos.length || 0}</div>
-                            <div style="color: #856404;">Foto Sospese</div>
-                        </div>
-                        <div style="background: #f8d7da; padding: 15px; border-radius: 8px;">
-                            <div style="font-size: 24px; font-weight: bold; color: #721c24;">${totalReports.length || 0}</div>
-                            <div style="color: #721c24;">Report Totali</div>
-                        </div>
-                    </div>
-                `;
+                if (error) return false;
+                return data.valid;
                 
             } catch (error) {
-                console.error('Errore nel caricamento delle statistiche:', error);
-                moderationStats.innerHTML = '<div class="empty-state"><p>Errore nel caricamento delle statistiche</p></div>';
+                return false;
             }
         }
 
-        // Inizializza tutti gli event listener
+        async function checkModerationPassword(inputPassword) {
+            const isValid = await verifyPasswordWithSupabase(inputPassword);
+            
+            if (!isValid) {
+                moderationAttempts--;
+                
+                if (moderationAttempts <= 0) {
+                    showNotification('Accesso bloccato. Attendi 30 secondi.', true);
+                } else {
+                    showNotification(`Password errata! Tentativi rimanenti: ${moderationAttempts}`, true);
+                }
+            } else {
+                moderationAttempts = 3;
+                isModerationAuthenticated = true;
+                showNotification('Accesso moderazione consentito!', false, 'success');
+            }
+            
+            return isValid;
+        }
+
+        function showPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('attemptsInfo').textContent = `Tentativi rimanenti: ${moderationAttempts}`;
+            document.getElementById('moderationPasswordInput').value = '';
+        }
+
+        async function handlePasswordSubmit() {
+            const passwordInput = document.getElementById('moderationPasswordInput');
+            const password = passwordInput.value;
+            
+            if (!password) {
+                showNotification('Inserisci una password!', true);
+                return;
+            }
+            
+            const isValid = await checkModerationPassword(password);
+            
+            if (isValid) {
+                closeModal('passwordModal');
+                switchTab('moderation');
+            } else {
+                const attemptsInfo = document.getElementById('attemptsInfo');
+                if (attemptsInfo) {
+                    attemptsInfo.textContent = `Tentativi rimanenti: ${moderationAttempts}`;
+                }
+                passwordInput.value = '';
+            }
+        }
+
+        function logoutModeration() {
+            isModerationAuthenticated = false;
+            showNotification('Disconnesso dalla moderazione', false, 'info');
+            
+            if (document.getElementById('moderation-tab').classList.contains('active')) {
+                switchTab('upload');
+            }
+        }
+
+        // EVENT LISTENERS
         function initEventListeners() {
-            // Gestione selezione genere per upload
             document.getElementById('maleBtn').addEventListener('click', function() {
                 selectGender('male');
             });
@@ -2728,7 +1945,6 @@
                 selectGender('female');
             });
             
-            // Gestione selezione genere per votazione
             document.getElementById('voteMaleBtn').addEventListener('click', function() {
                 selectVoteGender('male');
             });
@@ -2737,21 +1953,18 @@
                 selectVoteGender('female');
             });
             
-            // Gestione selezione file
             document.getElementById('fileInput').addEventListener('change', function(e) {
                 if (e.target.files.length) {
                     handleFileSelection(e.target.files[0]);
                 }
             });
             
-            // Gestione import file
             document.getElementById('importFile').addEventListener('change', function(e) {
                 if (e.target.files.length) {
                     importData(e.target.files[0]);
                 }
             });
             
-            // Gestione drag and drop
             const uploadArea = document.getElementById('uploadArea');
             
             uploadArea.addEventListener('click', function() {
@@ -2776,9 +1989,7 @@
                 }
             });
             
-            // Scorciatoie da tastiera
             document.addEventListener('keydown', function(e) {
-                // Solo se siamo nella tab di votazione
                 if (document.getElementById('vote-tab').classList.contains('active')) {
                     switch(e.key) {
                         case 'ArrowLeft':
@@ -2793,7 +2004,6 @@
                             break;
                         case ' ':
                             e.preventDefault();
-                            // Salta la foto corrente
                             currentPhotoIndex++;
                             showCurrentPhoto();
                             break;
@@ -2802,7 +2012,7 @@
             });
         }
 
-        // Gestione Menu Laterale
+        // NAVIGAZIONE
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
@@ -2811,33 +2021,28 @@
         }
         
         function switchTab(tabName) {
-            // Chiudi il menu laterale su mobile
             if (window.innerWidth <= 768) {
                 toggleSidebar();
             }
             
-            // Nascondi tutti i tab contents
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            // 🔐 GESTIONE ACCESSO MODERAZIONE
             if (tabName === 'moderation') {
                 if (!isModerationAuthenticated) {
                     if (moderationAttempts > 0) {
                         showPasswordModal();
                         return;
                     } else {
-                        showNotification('Hai esaurito i tentativi di accesso alla moderazione!', true);
+                        showNotification('Hai esaurito i tentativi di accesso!', true);
                         return;
                     }
                 }
             }
             
-            // Mostra il tab selezionato
             document.getElementById(`${tabName}-tab`).classList.add('active');
             
-            // Aggiorna i link nel menu laterale
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('data-tab') === tabName) {
@@ -2845,7 +2050,6 @@
                 }
             });
             
-            // Carica contenuti specifici
             if (tabName === 'vote') {
                 loadPhotosForVoting();
             } else if (tabName === 'history') {
@@ -2856,14 +2060,12 @@
                 loadAchievementsDisplay();
             } else if (tabName === 'moderation' && isModerationAuthenticated) {
                 loadReportedPhotos();
-                loadSuspendedPhotos();
-                loadModerationStats();
             } else if (tabName === 'settings') {
                 loadStats();
             }
         }
 
-        // Esporta dati
+        // ESPORTA/IMPORTA
         function exportData() {
             const data = {
                 voteHistory: voteHistory,
@@ -2882,7 +2084,6 @@
             showNotification('Dati esportati con successo!');
         }
         
-        // Importa dati
         function importData(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -2901,7 +2102,6 @@
                     
                     showNotification('Dati importati con successo!');
                     
-                    // Ricarica le view interessate
                     if (document.getElementById('history-tab').classList.contains('active')) {
                         loadVoteHistory();
                     }
