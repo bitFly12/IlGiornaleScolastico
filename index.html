@@ -1351,20 +1351,29 @@
         }
 
         async function suspendPhoto(photoId) {
-            try {
-                const { error } = await supabase
-                    .from('photos')
-                    .update({ status: 'suspended' })
-                    .eq('id', photoId);
-                
-                if (error) throw error;
-                
-                showNotification('Foto sospesa con successo!', false, 'warning');
-                
-            } catch (error) {
-                console.error('Errore durante la sospensione:', error);
-                showNotification('Errore durante la sospensione. Riprova.', true);
-            }
+             try {
+        const { error } = await supabase
+            .from('photos')
+            .update({ 
+                status: 'suspended',
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', photoId);
+        
+        if (error) {
+            console.error('Errore sospensione:', error);
+            // Prova senza updated_at
+            await supabase
+                .from('photos')
+                .update({ status: 'suspended' })
+                .eq('id', photoId);
+        } else {
+            showNotification('Foto sospesa con successo!', false, 'warning');
+        }
+        
+    } catch (error) {
+        console.error('Errore durante la sospensione:', error);
+    }
         }
 
         // FUNZIONE PER CAMBIARE VOTO NELLA CRONOLOGIA
@@ -2248,4 +2257,5 @@
     </script>
 </body>
 </html>
+
 
