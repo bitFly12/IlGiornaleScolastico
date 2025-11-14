@@ -1273,82 +1273,83 @@
             `;
         }
 
-      // SISTEMA DI SEGNALAZIONE CORRETTO
-async function submitReport() {
-    if (!currentPhotoForReport) return;
-    
-    const reason = document.getElementById('reportReason').value;
-    const details = document.getElementById('reportDetails').value;
-    
-    try {
-        console.log('Iniziando segnalazione per foto:', currentPhotoForReport);
-        
-        // PRIMA: Verifica che la foto esista
-        const { data: photoExists, error: checkError } = await supabase
-            .from('photos')
-            .select('id')
-            .eq('id', currentPhotoForReport)
-            .single();
+        // SISTEMA DI SEGNALAZIONE CORRETTO
+        async function submitReport() {
+            if (!currentPhotoForReport) return;
             
-        if (checkError || !photoExists) {
-            throw new Error('Foto non trovata nel database');
+            const reason = document.getElementById('reportReason').value;
+            const details = document.getElementById('reportDetails').value;
+            
+            try {
+                console.log('Iniziando segnalazione per foto:', currentPhotoForReport);
+                
+                // PRIMA: Verifica che la foto esista
+                const { data: photoExists, error: checkError } = await supabase
+                    .from('photos')
+                    .select('id')
+                    .eq('id', currentPhotoForReport)
+                    .single();
+                    
+                if (checkError || !photoExists) {
+                    throw new Error('Foto non trovata nel database');
+                }
+                
+                // SECONDO: Inserisci il report
+                const reportData = {
+                    photo_id: currentPhotoForReport,
+                    reason: reason,
+                    details: details || null,
+                    reported_at: new Date().toISOString()
+                };
+                
+                console.log('Inserendo report:', reportData);
+                
+                const { data: reportResult, error: reportError } = await supabase
+                    .from('reports')
+                    .insert([reportData])
+                    .select();
+                
+                if (reportError) {
+                    console.error('Errore Supabase:', reportError);
+                    throw new Error(`Errore nel salvataggio: ${reportError.message}`);
+                }
+                
+                // TERZO: Aggiorna il conteggio delle segnalazioni nella foto
+                const { data: currentPhoto, error: fetchError } = await supabase
+                    .from('photos')
+                    .select('report_count, status')
+                    .eq('id', currentPhotoForReport)
+                    .single();
+                
+                if (fetchError) throw new Error('Errore nel recupero dati foto');
+                
+                const newReportCount = (currentPhoto.report_count || 0) + 1;
+                
+                const { error: updateError } = await supabase
+                    .from('photos')
+                    .update({ 
+                        report_count: newReportCount,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', currentPhotoForReport);
+                
+                if (updateError) throw new Error('Errore nell\'aggiornamento del conteggio');
+                
+                showNotification('Segnalazione inviata con successo! Il moderatore vedrà il tuo messaggio.', false, 'success');
+                closeModal('reportModal');
+                
+                // Sospensione automatica se raggiunge la soglia
+                if (newReportCount >= REPORT_THRESHOLD && currentPhoto.status === 'active') {
+                    await suspendPhoto(currentPhotoForReport);
+                    showNotification('Foto sospesa automaticamente per troppe segnalazioni', false, 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Errore completo durante la segnalazione:', error);
+                showNotification(error.message || 'Errore durante la segnalazione. Riprova.', true);
+            }
         }
-        
-        // SECONDO: Inserisci il report
-        const reportData = {
-            photo_id: currentPhotoForReport,
-            reason: reason,
-            details: details || null,
-            reported_at: new Date().toISOString()
-        };
-        
-        console.log('Inserendo report:', reportData);
-        
-        const { data: reportResult, error: reportError } = await supabase
-            .from('reports')
-            .insert([reportData])
-            .select();
-        
-        if (reportError) {
-            console.error('Errore Supabase:', reportError);
-            throw new Error(`Errore nel salvataggio: ${reportError.message}`);
-        }
-        
-        // TERZO: Aggiorna il conteggio delle segnalazioni nella foto
-        const { data: currentPhoto, error: fetchError } = await supabase
-            .from('photos')
-            .select('report_count, status')
-            .eq('id', currentPhotoForReport)
-            .single();
-        
-        if (fetchError) throw new Error('Errore nel recupero dati foto');
-        
-        const newReportCount = (currentPhoto.report_count || 0) + 1;
-        
-        const { error: updateError } = await supabase
-            .from('photos')
-            .update({ 
-                report_count: newReportCount,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', currentPhotoForReport);
-        
-        if (updateError) throw new Error('Errore nell\'aggiornamento del conteggio');
-        
-        showNotification('Segnalazione inviata con successo!', false, 'success');
-        closeModal('reportModal');
-        
-        // Sospensione automatica se raggiunge la soglia
-        if (newReportCount >= REPORT_THRESHOLD && currentPhoto.status === 'active') {
-            await suspendPhoto(currentPhotoForReport);
-            showNotification('Foto sospesa automaticamente per troppe segnalazioni', false, 'warning');
-        }
-        
-    } catch (error) {
-        console.error('Errore completo durante la segnalazione:', error);
-        showNotification(error.message || 'Errore durante la segnalazione. Riprova.', true);
-    }
-}
+
         async function suspendPhoto(photoId) {
             try {
                 const { error } = await supabase
@@ -1426,11 +1427,11 @@ async function submitReport() {
             reportedPhotosList.innerHTML = '<div class="loading">Caricamento foto segnalate...</div>';
             
             try {
+                // Carica le foto segnalate
                 const { data: photos, error } = await supabase
                     .from('photos')
                     .select('*')
                     .gt('report_count', 0)
-                    .eq('status', 'active')
                     .order('report_count', { ascending: false });
                 
                 if (error) throw error;
@@ -1439,8 +1440,24 @@ async function submitReport() {
                     reportedPhotosList.innerHTML = '<div class="empty-state"><p>Nessuna foto segnalata</p></div>';
                     return;
                 }
+
+                // Per ogni foto, carica i report dettagliati
+                const photosWithReports = await Promise.all(
+                    photos.map(async (photo) => {
+                        const { data: reports, error: reportsError } = await supabase
+                            .from('reports')
+                            .select('*')
+                            .eq('photo_id', photo.id)
+                            .order('reported_at', { ascending: false });
+                        
+                        return {
+                            ...photo,
+                            reports: reports || []
+                        };
+                    })
+                );
                 
-                reportedPhotosList.innerHTML = photos.map(photo => {
+                reportedPhotosList.innerHTML = photosWithReports.map(photo => {
                     return `
                         <div class="reported-photo">
                             <div style="display: flex; align-items: center; margin-bottom: 15px;">
@@ -1449,8 +1466,24 @@ async function submitReport() {
                                     <h4>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</h4>
                                     <p><strong>Segnalazioni:</strong> ${photo.report_count || 0}</p>
                                     <p><strong>Smash:</strong> ${photo.smash_count} | <strong>Pass:</strong> ${photo.pass_count}</p>
+                                    <p><strong>Stato:</strong> ${photo.status || 'active'}</p>
                                 </div>
                             </div>
+                            
+                            <!-- MOSTRA I DETTAGLI DELLE SEGNALAZIONI -->
+                            ${photo.reports.length > 0 ? `
+                                <div class="report-details">
+                                    <h4>Dettagli Segnalazioni (${photo.reports.length}):</h4>
+                                    ${photo.reports.map((report, index) => `
+                                        <div class="report-item">
+                                            <p><strong>Segnalazione #${index + 1}:</strong></p>
+                                            <p><strong>Motivo:</strong> ${report.reason}</p>
+                                            <p><strong>Dettagli:</strong> ${report.details || 'Nessun dettaglio aggiuntivo'}</p>
+                                            <p><strong>Data:</strong> ${new Date(report.reported_at).toLocaleString('it-IT')}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : '<p>Nessun dettaglio disponibile per le segnalazioni</p>'}
                             
                             <div class="admin-actions">
                                 <button class="admin-btn approve-btn" onclick="approvePhoto('${photo.id}')">✅ Approva</button>
@@ -2215,4 +2248,3 @@ async function submitReport() {
     </script>
 </body>
 </html>
-
