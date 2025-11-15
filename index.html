@@ -16,6 +16,132 @@
             background-color: #f5f5f5;
             color: #333;
             line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        
+        /* DARK MODE STYLES */
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .tab-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .sidebar {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .sidebar-nav a {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .sidebar-nav a:hover,
+        body.dark-mode .sidebar-nav a.active {
+            background: #2a5298;
+            color: white;
+        }
+
+        body.dark-mode .btn-secondary {
+            background: #404040;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .btn-secondary:hover {
+            background: #505050;
+        }
+
+        body.dark-mode .history-item,
+        body.dark-mode .leaderboard-item,
+        body.dark-mode .achievement-item {
+            background: #3d3d3d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .settings-section {
+            background: #3d3d3d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .password-input {
+            background: #404040;
+            color: #e0e0e0;
+            border: 1px solid #555;
+        }
+
+        body.dark-mode .file-restrictions {
+            background: #2a3d5c;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .modal-content {
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .reported-photo {
+            background: #3d3d3d;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .empty-state {
+            color: #aaa;
+        }
+
+        /* Toggle Switch per Dark Mode */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2a5298;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
         
         .container {
@@ -1103,6 +1229,18 @@
         
         <div class="tab-content" id="settings-tab">
             <div class="settings-section">
+                <h3>💡 Tema</h3>
+                <p>Passa dalla modalità chiara a scura e viceversa</p>
+                <div class="theme-switch">
+                    <span>🌙 Modalità Scura</span>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="settings-section">
                 <h3>Importa/Esporta Dati</h3>
                 <p>Salva i tuoi dati locali o importa dati precedenti</p>
                 
@@ -1188,7 +1326,7 @@
         let achievements = JSON.parse(localStorage.getItem('achievements') || '{}');
         let currentPhotoForReport = null;
         
-        // Sistema moderazione
+        // SISTEMA MODERAZIONE - CORRETTO
         let moderationAttempts = 3;
         let isModerationAuthenticated = false;
         const REPORT_THRESHOLD = 3;
@@ -1502,6 +1640,32 @@
         // FINE SISTEMA ACHIEVEMENTS
         // =============================================
 
+        // FUNZIONI PER LA MODALITÀ SCURA
+        function initDarkMode() {
+            const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+            document.getElementById('darkModeToggle').checked = darkModeEnabled;
+            updateDarkMode(darkModeEnabled);
+        }
+
+        function updateDarkMode(enabled) {
+            if (enabled) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            localStorage.setItem('darkMode', enabled);
+        }
+
+        // Funzione per resettare i tentativi di moderazione
+        function resetModerationAttempts() {
+            moderationAttempts = 3;
+            // Aggiorna il display se il modal è aperto
+            const attemptsInfo = document.getElementById('attemptsInfo');
+            if (attemptsInfo) {
+                attemptsInfo.textContent = `Tentativi rimanenti: ${moderationAttempts}`;
+            }
+        }
+
         // Inizializza l'applicazione
         document.addEventListener('DOMContentLoaded', function() {
             initUserStats();
@@ -1509,6 +1673,12 @@
             loadPhotosForVoting();
             loadAchievements();
             loadStats();
+            initDarkMode(); // AGGIUNGI QUESTA RIGA
+            
+            // Aggiungi listener per il toggle dark mode
+            document.getElementById('darkModeToggle').addEventListener('change', function() {
+                updateDarkMode(this.checked);
+            });
         });
         
         // FUNZIONI PRINCIPALI CORRETTE
@@ -1622,15 +1792,15 @@
 
         // SISTEMA DI SEGNALAZIONE CORRETTO
         async function submitReport() {
-             if (!currentPhotoForReport) return;
-    
+            if (!currentPhotoForReport) return;
+
             const reason = document.getElementById('reportReason').value;
             const details = document.getElementById('reportDetails').value;
             
             try {
                 console.log('Iniziando segnalazione per foto:', currentPhotoForReport);
                 
-                // PRIMA: Inserisci il report (senza verifiche complesse)
+                // PRIMA: Inserisci il report
                 const reportData = {
                     photo_id: currentPhotoForReport,
                     reason: reason,
@@ -1646,10 +1816,9 @@
                 
                 if (reportError) {
                     console.error('Errore nell\'inserimento del report:', reportError);
-                    // Continua comunque, forse possiamo aggiornare il conteggio
                 }
                 
-                // SECONDO: Aggiorna il conteggio delle segnalazioni
+                // SECONDO: Aggiorna il conteggio delle segnalazioni e verifica la sospensione automatica
                 try {
                     // Prima ottieni il conteggio attuale
                     const { data: currentPhoto, error: fetchError } = await supabase
@@ -1663,7 +1832,7 @@
                     } else {
                         const newReportCount = (currentPhoto.report_count || 0) + 1;
                         
-                        // Aggiorna SOLO report_count, niente updated_at
+                        // Aggiorna report_count
                         const { error: updateError } = await supabase
                             .from('photos')
                             .update({ 
@@ -1676,7 +1845,7 @@
                         } else {
                             console.log('Conteggio aggiornato a:', newReportCount);
                             
-                            // Sospensione automatica
+                            // Sospensione automatica quando raggiunge 3 segnalazioni diverse
                             if (newReportCount >= REPORT_THRESHOLD && currentPhoto.status === 'active') {
                                 await suspendPhoto(currentPhotoForReport);
                             }
@@ -1684,10 +1853,9 @@
                     }
                 } catch (updateError) {
                     console.error('Errore nell\'aggiornamento:', updateError);
-                    // Non blocchiamo l'intera segnalazione per questo
                 }
                 
-                // AGGIUNGI QUESTA RIGA: Aggiorna statistiche e achievements
+                // Aggiorna statistiche e achievements
                 updateReportStats();
                 updateAchievements();
                 
@@ -1696,34 +1864,40 @@
                 
             } catch (error) {
                 console.error('Errore durante la segnalazione:', error);
-                showNotification('Segnalazione inviata!', false, 'success');
-                closeModal('reportModal');
+                showNotification('Errore durante la segnalazione. Riprova.', true);
             }
         }
 
         async function suspendPhoto(photoId) {
-             try {
+            try {
+                console.log(`Sospendendo automaticamente la foto ${photoId} per troppe segnalazioni`);
+                
                 const { error } = await supabase
                     .from('photos')
                     .update({ 
                         status: 'suspended',
-                        updated_at: new Date().toISOString()
+                        suspended_at: new Date().toISOString()
                     })
                     .eq('id', photoId);
                 
                 if (error) {
-                    console.error('Errore sospensione:', error);
-                    // Prova senza updated_at
+                    console.error('Errore sospensione automatica:', error);
+                    // Prova senza updated_at se fallisce
                     await supabase
                         .from('photos')
                         .update({ status: 'suspended' })
                         .eq('id', photoId);
-                } else {
-                    showNotification('Foto sospesa con successo!', false, 'warning');
+                }
+                
+                showNotification('Foto sospesa automaticamente per troppe segnalazioni!', false, 'warning');
+                
+                // Ricarica le foto segnalate se siamo nella tab moderazione
+                if (document.getElementById('moderation-tab').classList.contains('active')) {
+                    loadReportedPhotos();
                 }
                 
             } catch (error) {
-                console.error('Errore durante la sospensione:', error);
+                console.error('Errore durante la sospensione automatica:', error);
             }
         }
 
@@ -2048,112 +2222,113 @@
             }
         }
         
-        async function loadVoteHistory() { const historyList = document.getElementById('historyList');
-    historyList.innerHTML = '<div class="loading">Caricamento cronologia...</div>';
+        async function loadVoteHistory() { 
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '<div class="loading">Caricamento cronologia...</div>';
 
-    try {
-        const historyEntries = Object.entries(voteHistory);
-        
-        if (historyEntries.length === 0) {
-            historyList.innerHTML = '<div class="empty-state"><p>Non hai ancora votato nessuna foto.</p></div>';
-            return;
-        }
+            try {
+                const historyEntries = Object.entries(voteHistory);
+                
+                if (historyEntries.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state"><p>Non hai ancora votato nessuna foto.</p></div>';
+                    return;
+                }
 
-        const photoIds = historyEntries.map(([photoId]) => photoId);
-        const { data: photos, error } = await supabase
-            .from('photos')
-            .select('*')
-            .in('id', photoIds);
+                const photoIds = historyEntries.map(([photoId]) => photoId);
+                const { data: photos, error } = await supabase
+                    .from('photos')
+                    .select('*')
+                    .in('id', photoIds);
 
-        if (error) throw error;
+                if (error) throw error;
 
-        // 🔄 FILTRA E RIMUOVI LE FOTO CHE NON ESISTONO PIÙ
-        const photosMap = {};
-        const existingPhotoIds = new Set();
-        
-        if (photos) {
-            photos.forEach(photo => {
-                photosMap[photo.id] = photo;
-                existingPhotoIds.add(photo.id);
-            });
-        }
+                // 🔄 FILTRA E RIMUOVI LE FOTO CHE NON ESISTONO PIÙ
+                const photosMap = {};
+                const existingPhotoIds = new Set();
+                
+                if (photos) {
+                    photos.forEach(photo => {
+                        photosMap[photo.id] = photo;
+                        existingPhotoIds.add(photo.id);
+                    });
+                }
 
-        // Rimuovi dalla cronologia locale le foto che non esistono più
-        let updatedVoteHistory = { ...voteHistory };
-        let removedCount = 0;
-        
-        Object.keys(voteHistory).forEach(photoId => {
-            if (!existingPhotoIds.has(photoId)) {
-                delete updatedVoteHistory[photoId];
-                removedCount++;
-            }
-        });
+                // Rimuovi dalla cronologia locale le foto che non esistono più
+                let updatedVoteHistory = { ...voteHistory };
+                let removedCount = 0;
+                
+                Object.keys(voteHistory).forEach(photoId => {
+                    if (!existingPhotoIds.has(photoId)) {
+                        delete updatedVoteHistory[photoId];
+                        removedCount++;
+                    }
+                });
 
-        // Aggiorna il localStorage se sono state rimosse delle foto
-        if (removedCount > 0) {
-            voteHistory = updatedVoteHistory;
-            localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
-            console.log(`Rimosse ${removedCount} foto non più esistenti dalla cronologia`);
-        }
+                // Aggiorna il localStorage se sono state rimosse delle foto
+                if (removedCount > 0) {
+                    voteHistory = updatedVoteHistory;
+                    localStorage.setItem('voteHistory', JSON.stringify(voteHistory));
+                    console.log(`Rimosse ${removedCount} foto non più esistenti dalla cronologia`);
+                }
 
-        // Aggiorna historyEntries con i dati filtrati
-        const filteredHistoryEntries = Object.entries(voteHistory);
+                // Aggiorna historyEntries con i dati filtrati
+                const filteredHistoryEntries = Object.entries(voteHistory);
 
-        const finalFilteredEntries = filteredHistoryEntries.filter(([photoId, vote]) => {
-            if (currentHistoryFilter === 'all') return true;
-            return vote === currentHistoryFilter;
-        });
+                const finalFilteredEntries = filteredHistoryEntries.filter(([photoId, vote]) => {
+                    if (currentHistoryFilter === 'all') return true;
+                    return vote === currentHistoryFilter;
+                });
 
-        if (finalFilteredEntries.length === 0) {
-            historyList.innerHTML = '<div class="empty-state"><p>Nessun voto corrisponde al filtro selezionato.</p></div>';
-            return;
-        }
+                if (finalFilteredEntries.length === 0) {
+                    historyList.innerHTML = '<div class="empty-state"><p>Nessun voto corrisponde al filtro selezionato.</p></div>';
+                    return;
+                }
 
-        historyList.innerHTML = finalFilteredEntries.map(([photoId, vote]) => {
-            const photo = photosMap[photoId];
-            
-            // Questa condizione non dovrebbe mai verificarsi ora, ma la lasciamo per sicurezza
-            if (!photo) {
-                return `
-                    <div class="history-item">
-                        <div class="history-info">
-                            <p><strong>Foto ID:</strong> ${photoId.substring(0, 8)}...</p>
-                            <p><strong>Voto:</strong> ${vote === 'smash' ? '😍 SMASH' : '😐 PASS'}</p>
-                            <p><em>Foto rimossa - aggiorna la pagina</em></p>
+                historyList.innerHTML = finalFilteredEntries.map(([photoId, vote]) => {
+                    const photo = photosMap[photoId];
+                    
+                    // Questa condizione non dovrebbe mai verificarsi ora, ma la lasciamo per sicurezza
+                    if (!photo) {
+                        return `
+                            <div class="history-item">
+                                <div class="history-info">
+                                    <p><strong>Foto ID:</strong> ${photoId.substring(0, 8)}...</p>
+                                    <p><strong>Voto:</strong> ${vote === 'smash' ? '😍 SMASH' : '😐 PASS'}</p>
+                                    <p><em>Foto rimossa - aggiorna la pagina</em></p>
+                                </div>
+                                <div class="history-vote ${vote}">
+                                    ${vote === 'smash' ? 'SMASH' : 'PASS'}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    const oppositeVote = vote === 'smash' ? 'pass' : 'smash';
+                    const oppositeText = vote === 'smash' ? 'PASS' : 'SMASH';
+                    const oppositeEmoji = vote === 'smash' ? '😐' : '😍';
+
+                    return `
+                        <div class="history-item">
+                            <img src="${photo.image_url}" class="history-photo" alt="Foto votata" onerror="this.style.display='none'">
+                            <div class="history-info">
+                                <p><strong>Genere:</strong> ${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</p>
+                                <p><strong>Statistiche:</strong> ${photo.smash_count} 😍 | ${photo.pass_count} 😐</p>
+                                <p><strong>Il tuo voto:</strong> ${vote === 'smash' ? '😍 SMASH' : '😐 PASS'}</p>
+                            </div>
+                            <div class="history-vote ${vote}">
+                                ${vote === 'smash' ? 'SMASH' : 'PASS'}
+                            </div>
+                            <button class="change-vote-btn" onclick="changeVote('${photo.id}', '${oppositeVote}')">
+                                Cambia in ${oppositeEmoji} ${oppositeText}
+                            </button>
                         </div>
-                        <div class="history-vote ${vote}">
-                            ${vote === 'smash' ? 'SMASH' : 'PASS'}
-                        </div>
-                    </div>
-                `;
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Errore nel caricamento della cronologia:', error);
+                historyList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento della cronologia.</p></div>';
             }
-
-            const oppositeVote = vote === 'smash' ? 'pass' : 'smash';
-            const oppositeText = vote === 'smash' ? 'PASS' : 'SMASH';
-            const oppositeEmoji = vote === 'smash' ? '😐' : '😍';
-
-            return `
-                <div class="history-item">
-                    <img src="${photo.image_url}" class="history-photo" alt="Foto votata" onerror="this.style.display='none'">
-                    <div class="history-info">
-                        <p><strong>Genere:</strong> ${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</p>
-                        <p><strong>Statistiche:</strong> ${photo.smash_count} 😍 | ${photo.pass_count} 😐</p>
-                        <p><strong>Il tuo voto:</strong> ${vote === 'smash' ? '😍 SMASH' : '😐 PASS'}</p>
-                    </div>
-                    <div class="history-vote ${vote}">
-                        ${vote === 'smash' ? 'SMASH' : 'PASS'}
-                    </div>
-                    <button class="change-vote-btn" onclick="changeVote('${photo.id}', '${oppositeVote}')">
-                        Cambia in ${oppositeEmoji} ${oppositeText}
-                    </button>
-                </div>
-            `;
-        }).join('');
-
-    } catch (error) {
-        console.error('Errore nel caricamento della cronologia:', error);
-        historyList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento della cronologia.</p></div>';
-    }
         }
         
         function filterHistory(filter) {
@@ -2166,52 +2341,52 @@
         }
         
         async function loadLeaderboard() {
-    const leaderboardList = document.getElementById('leaderboardList');
-    leaderboardList.innerHTML = '<div class="loading">Caricamento classifica...</div>';
-    
-    try {
-        let query = supabase
-            .from('photos')
-            .select('*')
-            .eq('status', 'active')
-            .order('smash_count', { ascending: false })
-            .limit(20);
-        
-        if (currentLeaderboardFilter !== 'all') {
-            query = query.eq('gender', currentLeaderboardFilter);
-        }
-        
-        const { data: photos, error } = await query;
-        
-        if (error) throw error;
-        
-        if (!photos || photos.length === 0) {
-            leaderboardList.innerHTML = '<div class="empty-state"><p>Nessuna foto in classifica.</p></div>';
-            return;
-        }
-        
-        leaderboardList.innerHTML = photos.map((photo, index) => {
-            return `
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank">${index + 1}</div>
-                    <img src="${photo.image_url}" class="leaderboard-photo" alt="Foto" onerror="this.style.display='none'">
-                    <div class="leaderboard-info">
-                        <h4>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</h4>
-                    </div>
-                    <div class="leaderboard-score">
-                        ${photo.smash_count} 😍
-                    </div>
-                    <button class="report-btn" onclick="openReportModal('${photo.id}')">
-                        ⚠️
-                    </button>
-                </div>
-            `;
-        }).join('');
-        
-    } catch (error) {
-        console.error('Errore nel caricamento della classifica:', error);
-        leaderboardList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento della classifica.</p></div>';
-    }
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '<div class="loading">Caricamento classifica...</div>';
+            
+            try {
+                let query = supabase
+                    .from('photos')
+                    .select('*')
+                    .eq('status', 'active')
+                    .order('smash_count', { ascending: false })
+                    .limit(20);
+                
+                if (currentLeaderboardFilter !== 'all') {
+                    query = query.eq('gender', currentLeaderboardFilter);
+                }
+                
+                const { data: photos, error } = await query;
+                
+                if (error) throw error;
+                
+                if (!photos || photos.length === 0) {
+                    leaderboardList.innerHTML = '<div class="empty-state"><p>Nessuna foto in classifica.</p></div>';
+                    return;
+                }
+                
+                leaderboardList.innerHTML = photos.map((photo, index) => {
+                    return `
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank">${index + 1}</div>
+                            <img src="${photo.image_url}" class="leaderboard-photo" alt="Foto" onerror="this.style.display='none'">
+                            <div class="leaderboard-info">
+                                <h4>${photo.gender === 'male' ? '👦 Ragazzo' : '👧 Ragazza'}</h4>
+                            </div>
+                            <div class="leaderboard-score">
+                                ${photo.smash_count} 😍
+                            </div>
+                            <button class="report-btn" onclick="openReportModal('${photo.id}')">
+                                ⚠️
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Errore nel caricamento della classifica:', error);
+                leaderboardList.innerHTML = '<div class="empty-state"><p>Errore nel caricamento della classifica.</p></div>';
+            }
         }
         
         function filterLeaderboard(filter) {
@@ -2366,18 +2541,30 @@
         }
 
         async function checkModerationPassword(inputPassword) {
+            // Se i tentativi sono esauriti, blocca l'accesso
+            if (moderationAttempts <= 0) {
+                showNotification('Accesso bloccato! Tentativi esauriti.', true);
+                return false;
+            }
+            
             const isValid = await verifyPasswordWithSupabase(inputPassword);
             
             if (!isValid) {
                 moderationAttempts--;
                 
                 if (moderationAttempts <= 0) {
-                    showNotification('Accesso bloccato. Attendi 30 secondi.', true);
+                    showNotification('Accesso bloccato! Tentativi esauriti.', true);
                 } else {
                     showNotification(`Password errata! Tentativi rimanenti: ${moderationAttempts}`, true);
                 }
+                
+                // Aggiorna il display dei tentativi
+                const attemptsInfo = document.getElementById('attemptsInfo');
+                if (attemptsInfo) {
+                    attemptsInfo.textContent = `Tentativi rimanenti: ${moderationAttempts}`;
+                }
             } else {
-                moderationAttempts = 3;
+                moderationAttempts = 3; // Reset tentativi su successo
                 isModerationAuthenticated = true;
                 showNotification('Accesso moderazione consentito!', false, 'success');
             }
@@ -2386,6 +2573,8 @@
         }
 
         function showPasswordModal() {
+            // Reset tentativi quando si riapre il modal
+            resetModerationAttempts();
             document.getElementById('passwordModal').style.display = 'flex';
             document.getElementById('attemptsInfo').textContent = `Tentativi rimanenti: ${moderationAttempts}`;
             document.getElementById('moderationPasswordInput').value = '';
@@ -2613,5 +2802,3 @@
     </script>
 </body>
 </html>
-
-
