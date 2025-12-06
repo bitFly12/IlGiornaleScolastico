@@ -4,90 +4,386 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Area Riservata - Giornale Scolastico</title>
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Supabase Client -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <style>
-        body { background: #f5f5f5; }
-        .login-box { max-width: 400px; margin: 100px auto; }
+        :root {
+            --primary-color: #0d6efd;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            background: linear-gradient(180deg, var(--primary-color) 0%, #0b5ed7 100%);
+            color: white;
+            padding-top: 20px;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+        
+        .stat-card {
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .article-card {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .article-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-box card shadow">
-            <div class="card-body">
-                <h3 class="text-center mb-4">
-                    <i class="bi bi-shield-lock text-primary"></i><br>
-                    Area Riservata Redazione
-                </h3>
-                
-                <div id="login-form">
-                    <div class="mb-3">
-                        <label>Email della scuola</label>
-                        <input type="email" class="form-control" id="email" placeholder="nome.cognome@scuola.edu">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner-border text-primary spinner" role="status">
+            <span class="visually-hidden">Caricamento...</span>
+        </div>
+        <p class="mt-3" id="loadingText">Caricamento...</p>
+    </div>
+
+    <!-- Login Section -->
+    <div id="login-section" class="d-none">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-body p-5">
+                            <div class="text-center mb-4">
+                                <i class="bi bi-shield-lock display-1 text-primary"></i>
+                                <h2 class="h3 mt-3">Area Riservata</h2>
+                                <p class="text-muted">Giornale Scolastico - Redazione</p>
+                            </div>
+                            
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <label for="loginEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="loginEmail" 
+                                           placeholder="nome.cognome@scuola.edu" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="loginPassword" class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="loginPassword" required>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-box-arrow-in-right"></i> Accedi
+                                </button>
+                            </form>
+                            
+                            <div class="text-center mt-4">
+                                <small class="text-muted">
+                                    Solo i redattori autorizzati possono accedere
+                                </small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label>Password</label>
-                        <input type="password" class="form-control" id="password">
-                    </div>
-                    <button class="btn btn-primary w-100" onclick="effettuaLogin()">Accedi</button>
-                </div>
-                
-                <div id="editor-area" style="display: none;">
-                    <h4>Benvenuto, <span id="nome-redattore"></span>!</h4>
-                    <div class="list-group mt-3">
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-pencil"></i> Scrivi un nuovo articolo
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-list-check"></i> Gestisci le tue bozze
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action">
-                            <i class="bi bi-gear"></i> Impostazioni profilo
-                        </a>
-                    </div>
-                    <button class="btn btn-outline-danger w-100 mt-3" onclick="effettuaLogout()">Esci</button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <script>
-        const supabase = supabase.createClient(
-            'https://TUO_PROGETTO.supabase.co',
-            'TUA_CHIAVE_PUBBLICA_ANONIMA'
-        );
-        
-        async function effettuaLogin() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="d-none">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="px-3 mb-4">
+                <h4 class="mb-0">
+                    <i class="bi bi-newspaper"></i> Redazione
+                </h4>
+                <small id="userRole" class="text-light">Reporter</small>
+            </div>
             
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
+            <div class="px-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-person-circle fs-3"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0" id="userName">Nome Redattore</h6>
+                        <small class="text-light" id="userEmail">email@scuola.edu</small>
+                    </div>
+                </div>
+            </div>
             
-            if (error) {
-                alert('Errore di login: ' + error.message);
-            } else {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('editor-area').style.display = 'block';
-                document.getElementById('nome-redattore').textContent = data.user.email;
-            }
-        }
-        
-        function effettuaLogout() {
-            supabase.auth.signOut();
-            location.reload();
-        }
-        
-        // Controlla se già loggato
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('editor-area').style.display = 'block';
-                document.getElementById('nome-redattore').textContent = session.user.email;
-            }
-        });
-    </script>
+            <nav class="nav flex-column px-3">
+                <a href="#" class="nav-link text-light active" data-filter="all">
+                    <i class="bi bi-house-door me-2"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link text-light" data-filter="my">
+                    <i class="bi bi-file-text me-2"></i> I Miei Articoli
+                </a>
+                <a href="#" class="nav-link text-light" data-filter="drafts">
+                    <i class="bi bi-pencil me-2"></i> Bozze
+                </a>
+                <a href="#" class="nav-link text-light" data-filter="review">
+                    <i class="bi bi-clock-history me-2"></i> In Revisione
+                </a>
+                <a href="#" class="nav-link text-light" data-filter="published">
+                    <i class="bi bi-check-circle me-2"></i> Pubblicati
+                </a>
+                
+                <hr class="bg-light">
+                
+                <button id="newArticleBtn" class="btn btn-warning mt-3">
+                    <i class="bi bi-plus-circle"></i> Nuovo Articolo
+                </button>
+                
+                <button id="logoutBtn" class="btn btn-outline-light mt-2">
+                    <i class="bi bi-box-arrow-right"></i> Esci
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Messages Container -->
+            <div id="messages-container"></div>
+            
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">Dashboard Redazione</h1>
+                    <p class="text-muted mb-0">Gestisci gli articoli del giornale scolastico</p>
+                </div>
+                <button id="refreshBtn" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Aggiorna
+                </button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Articoli Totali</h6>
+                                    <h2 id="totalArticles" class="mb-0">0</h2>
+                                </div>
+                                <i class="bi bi-newspaper display-6 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Pubblicati</h6>
+                                    <h2 id="publishedArticles" class="mb-0">0</h2>
+                                </div>
+                                <i class="bi bi-check-circle display-6 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-warning text-dark">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Bozze</h6>
+                                    <h2 id="draftArticles" class="mb-0">0</h2>
+                                </div>
+                                <i class="bi bi-pencil display-6 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title">Visualizzazioni</h6>
+                                    <h2 id="totalViews" class="mb-0">0</h2>
+                                </div>
+                                <i class="bi bi-eye display-6 opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Articoli</h5>
+                </div>
+                <div class="card-body">
+                    <div id="articles-container">
+                        <!-- Gli articoli verranno caricati qui -->
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Caricamento...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Caricamento articoli...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Attività Recente</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="recentActivity">
+                                <p class="text-muted">Caricamento attività...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Editor Modal -->
+    <div class="modal fade" id="articleEditorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editorTitle">Nuovo Articolo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="articleForm">
+                        <input type="hidden" id="articleId" name="articleId">
+                        
+                        <div class="mb-3">
+                            <label for="articleTitle" class="form-label">Titolo *</label>
+                            <input type="text" class="form-control" id="articleTitle" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="articleSummary" class="form-label">Sommario</label>
+                            <textarea class="form-control" id="articleSummary" name="summary" rows="3" 
+                                      placeholder="Breve descrizione dell'articolo..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="articleContent" class="form-label">Contenuto *</label>
+                            <textarea class="form-control" id="articleContent" name="content" rows="10" 
+                                      placeholder="Scrivi il tuo articolo qui..." required></textarea>
+                            <small class="text-muted">Supporta markdown di base: **grassetto**, *corsivo*, liste, ecc.</small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="articleCategory" class="form-label">Categoria</label>
+                                <select class="form-select" id="articleCategory" name="category">
+                                    <option value="Notizie">Notizie</option>
+                                    <option value="Sport">Sport</option>
+                                    <option value="Cultura">Cultura</option>
+                                    <option value="Eventi">Eventi</option>
+                                    <option value="Interviste">Interviste</option>
+                                    <option value="Opinioni">Opinioni</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="articleStatus" class="form-label">Stato</label>
+                                <select class="form-select" id="articleStatus" name="status">
+                                    <option value="bozza">Bozza</option>
+                                    <option value="in_revisione">In Revisione</option>
+                                    <option value="pubblicato">Pubblicato</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="articleImage" class="form-label">URL Immagine</label>
+                                <input type="url" class="form-control" id="articleImage" name="image" 
+                                       placeholder="https://esempio.com/immagine.jpg">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="articleFeatured" name="featured">
+                                    <label class="form-check-label" for="articleFeatured">
+                                        Metti in evidenza
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" form="articleForm" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Salva Articolo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Admin JS -->
+    <script src="admin.js"></script>
 </body>
 </html>
