@@ -95,6 +95,37 @@ function mostraArticoli(articoli) {
     });
 }
 
+async function inviaCandidatura(event) {
+    event.preventDefault();
+    
+    const candidaturaData = {
+        nome_completo: document.getElementById('candidatura-nome').value,
+        email: document.getElementById('candidatura-email').value,
+        classe: document.getElementById('candidatura-classe').value,
+        motivazione: document.getElementById('candidatura-motivazione').value
+    };
+    
+    try {
+        const { error } = await supabaseClient
+            .from('candidature_redazione')
+            .insert([candidaturaData]);
+        
+        if (error) throw error;
+        
+        // Chiudi il modal e mostra conferma
+        bootstrap.Modal.getInstance(document.getElementById('modal-partecipa')).hide();
+        
+        alert('🎉 Candidatura inviata con successo!\nIl caporedattore la esaminerà e ti contatterà via email.');
+        
+        // Resetta il form
+        document.getElementById('form-candidatura').reset();
+        
+    } catch (error) {
+        console.error('Errore invio candidatura:', error);
+        alert('❌ Errore nell\'invio della candidatura. Riprova più tardi.');
+    }
+}
+
 async function verificaConnessioneSupabase() {
     try {
         const { data, error } = await supabaseClient
