@@ -1,0 +1,32 @@
+<!-- dashboard.html - Solo per caporedattori -->
+<script>
+async function caricaStatisticheAvanzate() {
+    const oggi = new Date();
+    const meseScorso = new Date(oggi.getFullYear(), oggi.getMonth() - 1, 1);
+    
+    // Statistiche articoli
+    const { count: totaleArticoli } = await supabaseClient
+        .from('articoli')
+        .select('*', { count: 'exact' });
+    
+    // Articoli questo mese
+    const { count: articoliMese } = await supabaseClient
+        .from('articoli')
+        .select('*', { count: 'exact' })
+        .gte('data_creazione', meseScorso.toISOString());
+    
+    // Top redattori
+    const { data: topRedattori } = await supabaseClient
+        .from('articoli')
+        .select('autore_id, profili_redattori(nome_visualizzato)')
+        .eq('stato', 'pubblicato')
+        .group('autore_id, profili_redattori.nome_visualizzato')
+        .limit(5);
+    
+    console.log({
+        totaleArticoli,
+        articoliMese,
+        topRedattori
+    });
+}
+</script>
