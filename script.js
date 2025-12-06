@@ -95,6 +95,59 @@ function mostraArticoli(articoli) {
     });
 }
 
+// Carica articoli con JOIN al profilo autore
+async function caricaUltimiArticoli() {
+    try {
+        const { data: articoli, error } = await supabaseClient
+            .from('articoli')
+            .select(`
+                id,
+                titolo,
+                sommario,
+                categoria,
+                stato,
+                in_evidenza,
+                immagine_url,
+                visualizzazioni,
+                data_pubblicazione,
+                autore_id,
+                profili_redattori!articoli_autore_id_fkey (
+                    nome_visualizzato,
+                    ruolo,
+                    avatar_url
+                )
+            `)
+            .eq('stato', 'pubblicato')
+            .order('data_pubblicazione', { ascending: false })
+            .limit(6);
+
+        if (error) throw error;
+        
+        if (articoli && articoli.length > 0) {
+            mostraArticoli(articoli);
+        }
+        
+        return articoli;
+    } catch (error) {
+        console.error('Errore caricamento articoli:', error);
+        return [];
+    }
+}
+
+// Incrementa contatore visualizzazioni
+async function incrementaVisualizzazioni(articoloId) {
+    try {
+        const { error } = await supabaseClient
+            .from('articoli')
+            .update({ visualizzazioni: supabaseClient.increment(1) })
+            .eq('id', articoloId);
+
+        if (error) console.error('Errore incremento visualizzazioni:', error);
+    } catch (error) {
+        console.error('Errore:', error);
+    }
+}
+
 async function registraGiornalista(email, password, nomeVisualizzato, classe, ruolo = 'Reporter') {
     try {
         // 1. Crea l'utente in Supabase Auth
