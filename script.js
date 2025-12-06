@@ -95,6 +95,42 @@ function mostraArticoli(articoli) {
     });
 }
 
+async function verificaConnessioneSupabase() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('articoli')
+            .select('count', { count: 'exact', head: true });
+        
+        if (error) {
+            console.error('Errore connessione Supabase:', error);
+            alert('Errore di connessione al database');
+            return false;
+        }
+        
+        console.log('Connessione Supabase OK');
+        return true;
+    } catch (error) {
+        console.error('Errore:', error);
+        return false;
+    }
+}
+
+async function verificaTabelle() {
+    const tabelle = ['articoli', 'profili_redattori', 'eventi'];
+    
+    for (let tabella of tabelle) {
+        const { count, error } = await supabaseClient
+            .from(tabella)
+            .select('*', { count: 'exact', head: true });
+        
+        if (error) {
+            console.error(`Tabella ${tabella} non accessibile:`, error);
+        } else {
+            console.log(`Tabella ${tabella}: OK (${count} records)`);
+        }
+    }
+}
+
 async function caricaProssimiEventi() {
     try {
         const oggi = new Date().toISOString();
