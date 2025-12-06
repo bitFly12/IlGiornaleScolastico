@@ -493,19 +493,54 @@ function ordinaArticoli(criterio) {
     alert(`Ordina per: ${criterio}\n(Implementazione in corso...)`);
 }
 
-function iscrivitiNewsletter() {
-    const email = document.getElementById('email-newsletter')?.value || '';
+async function iscrivitiNewsletter() {
+    const emailInput = document.getElementById('email-newsletter');
+    const email = emailInput.value.trim();
     
-    if (email && email.includes('@')) {
-        // Salva su Supabase
-        supabaseClient
-            .from('newsletter')
-            .insert([{ email: email, data_iscrizione: new Date().toISOString() }])
-            .then(() => {
-                alert('Grazie per esserti iscritto alla newsletter!');
-            });
-    } else {
+    if (!email || !email.includes('@')) {
         alert('Per favore, inserisci un indirizzo email valido.');
+        return;
+    }
+    
+    try {
+        // 1. Salva nel database
+        const { error: dbError } = await supabaseClient
+            .from('iscrizioni_newsletter')
+            .insert([{ 
+                email: email,
+                data_iscrizione: new Date().toISOString()
+            }]);
+        
+        if (dbError) {
+            // Se è un duplicato, è ok
+            if (!dbError.message.includes('duplicate')) {
+                throw dbError;
+            }
+        }
+        
+        // 2. MOSTRA CONFERMA VISIVA (sostituisce email inviate)
+        emailInput.value = '';
+        
+        // Crea notifica
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success alert-dismissible fade show';
+        notification.innerHTML = `
+            <i class="bi bi-check-circle"></i>
+            <strong>Iscrizione completata!</strong>
+            <p class="mb-0 small">Ora riceverai le notifiche sulle nuove pubblicazioni.</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Inserisci dopo il form
+        const form = emailInput.closest('.input-group').parentElement;
+        form.parentNode.insertBefore(notification, form.nextSibling);
+        
+        // 3. (OPZIONALE) Invia email di conferma via Supabase Edge Functions
+        // Richiede configurazione avanzata
+        
+    } catch (error) {
+        console.error('Errore iscrizione newsletter:', error);
+        alert('Si è verificato un errore. Riprova più tardi.');
     }
 }
 
