@@ -259,25 +259,32 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="form-partecipa">
-                        <div class="mb-3">
-                            <label class="form-label">Nome e Cognome</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Classe</label>
-                            <input type="text" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Perché vuoi entrare nella redazione?</label>
-                            <textarea class="form-control" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Invia Candidatura</button>
-                    </form>
+                    // SOSTITUISCI TUTTO IL FORM nel modal-partecipa con:
+<form id="form-candidatura" onsubmit="inviaCandidatura(event)">
+    <div class="mb-3">
+        <label class="form-label">Nome e Cognome *</label>
+        <input type="text" class="form-control" id="candidatura-nome" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email scolastica *</label>
+        <input type="email" class="form-control" id="candidatura-email" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Classe/Sezione</label>
+        <input type="text" class="form-control" id="candidatura-classe">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Perché vuoi entrare nella redazione? *</label>
+        <textarea class="form-control" id="candidatura-motivazione" rows="3" required></textarea>
+    </div>
+    <div class="alert alert-info small">
+        <i class="bi bi-info-circle"></i> La tua candidatura sarà esaminata dal caporedattore.
+        Riceverai una risposta alla email fornita.
+    </div>
+    <button type="submit" class="btn btn-primary w-100">
+        <i class="bi bi-send"></i> Invia Candidatura
+    </button>
+</form>
                 </div>
             </div>
         </div>
@@ -308,4 +315,5 @@
     </script>
 </body>
 </html>
+
 
