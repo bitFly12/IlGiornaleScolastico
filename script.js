@@ -95,6 +95,44 @@ function mostraArticoli(articoli) {
     });
 }
 
+async function registraGiornalista(email, password, nomeVisualizzato, classe, ruolo = 'Reporter') {
+    try {
+        // 1. Crea l'utente in Supabase Auth
+        const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    nome_visualizzato: nomeVisualizzato,
+                    ruolo: ruolo
+                }
+            }
+        });
+
+        if (authError) throw authError;
+
+        // 2. Crea il profilo nella tabella profili_redattori
+        const { error: profileError } = await supabaseClient
+            .from('profili_redattori')
+            .insert([{
+                id: authData.user.id,
+                nome_visualizzato: nomeVisualizzato,
+                ruolo: ruolo,
+                classe: classe,
+                data_iscrizione: new Date().toISOString()
+            }]);
+
+        if (profileError) throw profileError;
+
+        alert('Registrazione completata! Controlla la tua email per la verifica.');
+        return { success: true, userId: authData.user.id };
+        
+    } catch (error) {
+        console.error('Errore nella registrazione:', error);
+        alert('Errore nella registrazione: ' + error.message);
+        return { success: false, error: error.message };
+    }
+}
 // 2. ARTICOLI IN EVIDENZA
 async function caricaArticoliInEvidenza() {
     try {
