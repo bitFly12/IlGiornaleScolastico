@@ -95,6 +95,38 @@ function mostraArticoli(articoli) {
     });
 }
 
+async function caricaProssimiEventi() {
+    try {
+        const oggi = new Date().toISOString();
+        
+        const { data: eventi, error } = await supabaseClient
+            .from('eventi')
+            .select('*')
+            .gte('data_evento', oggi)
+            .order('data_evento', { ascending: true })
+            .limit(5);
+
+        if (error) throw error;
+        
+        // Mostra gli eventi nella sidebar
+        const container = document.getElementById('calendario-eventi');
+        if (container && eventi) {
+            container.innerHTML = eventi.map(evento => `
+                <div class="mb-3 p-2 border-start border-primary">
+                    <strong>${new Date(evento.data_evento).toLocaleDateString('it-IT')}</strong>
+                    <p class="mb-1">${evento.titolo}</p>
+                    <small class="text-muted">${evento.luogo || 'Presso la scuola'}</small>
+                </div>
+            `).join('');
+        }
+        
+        return eventi;
+    } catch (error) {
+        console.error('Errore caricamento eventi:', error);
+        return [];
+    }
+}
+
 // Carica articoli con JOIN al profilo autore
 async function caricaUltimiArticoli() {
     try {
