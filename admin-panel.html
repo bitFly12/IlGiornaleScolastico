@@ -1094,38 +1094,43 @@
     </div>
 
     <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr. net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle. min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min. js" crossorigin="anonymous"></script>
+    
 <script>
 (function() {
     'use strict';
     
-    // ===== CONFIGURAZIONE =====
-    const ADMIN_SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
-    const ADMIN_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LMbRCoJa_QOPXZv4HKPGrRb7H6Xql-nuWcQ7Zln4';
-    
-    let db = null;
-    let currentUser = null;
-    let currentProfile = null;
-    let articleModal, userModal, eventModal, newsletterModal;
+    // Wait for admin.js to be loaded and initialized
+    window.addEventListener('DOMContentLoaded', function() {
+        // Check if admin.js is loaded
+        if (typeof supabase === 'undefined') {
+            console.error('admin. js not loaded properly');
+            document.getElementById('loadingOverlay').innerHTML = 
+                '<div class="alert alert-danger">Errore di caricamento.  Ricarica la pagina. </div>';
+            return;
+        }
+        
+        // Initialize admin panel UI
+        initAdminPanel();
+    });
 
-    // ===== INIZIALIZZAZIONE =====
-    document.addEventListener('DOMContentLoaded', async function() {
+    async function initAdminPanel() {
         try {
-            db = window.supabase.createClient(ADMIN_SUPABASE_URL, ADMIN_SUPABASE_KEY);
+            showLoading(true, 'Caricamento...');
             
-            // Init modals
-            if (document.getElementById('articleModal')) articleModal = new bootstrap.Modal(document.getElementById('articleModal'));
-            if (document.getElementById('userModal')) userModal = new bootstrap.Modal(document.getElementById('userModal'));
-            if (document.getElementById('eventModal')) eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
-            if (document. getElementById('newsletterModal')) newsletterModal = new bootstrap.Modal(document.getElementById('newsletterModal'));
+            // Check authentication (this is already in admin.js)
+            // Just wait for it to complete
+            await checkAuthStatus();
             
-            await checkAuth();
-            setupEventListeners();
+            // Setup event listeners for this page
+            setupAdminPanelListeners();
+            
+            showLoading(false);
         } catch (error) {
             console.error('Init error:', error);
-            showToast('Errore di inizializzazione', 'error');
+            showLoading(false);
         }
-    });
+    }
 
     // ===== AUTENTICAZIONE =====
     async function checkAuth() {
@@ -1171,7 +1176,7 @@
     async function logout() {
         try {
             showLoading(true, 'Uscita...');
-            await db. auth.signOut();
+            await supabase.auth.signOut();
             window.location.href = 'login.html';
         } catch (error) {
             console.error('Logout error:', error);
