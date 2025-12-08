@@ -786,9 +786,61 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">URL Immagine</label>
-                            <input type="url" class="form-control" id="article-image" 
-                                   placeholder="https://esempio.com/immagine.jpg">
+                            <label class="form-label">Immagine Articolo</label>
+                            
+                            <!-- Tab navigation for image options -->
+                            <ul class="nav nav-pills mb-3" id="image-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="manual-tab" data-bs-toggle="pill" 
+                                            data-bs-target="#manual-upload" type="button" role="tab">
+                                        <i class="bi bi-upload me-1"></i>Upload Manuale
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="ai-tab" data-bs-toggle="pill" 
+                                            data-bs-target="#ai-generate" type="button" role="tab">
+                                        <i class="bi bi-stars me-1"></i>Genera con AI
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <!-- Tab content -->
+                            <div class="tab-content" id="image-tab-content">
+                                <!-- Manual upload -->
+                                <div class="tab-pane fade show active" id="manual-upload" role="tabpanel">
+                                    <input type="url" class="form-control mb-2" id="article-image" 
+                                           placeholder="https://esempio.com/immagine.jpg">
+                                    <small class="text-muted">Inserisci l'URL di un'immagine esistente</small>
+                                </div>
+                                
+                                <!-- AI generation -->
+                                <div class="tab-pane fade" id="ai-generate" role="tabpanel">
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        L'AI genererà un'immagine professionale basata sul titolo e contenuto dell'articolo
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="generate-ai-image" onclick="generateAIImage()">
+                                        <i class="bi bi-stars me-2"></i>Genera Immagine con Gemini AI
+                                    </button>
+                                    <div id="ai-image-preview" class="mt-3" style="display: none;">
+                                        <img id="ai-preview-img" class="img-fluid rounded" style="max-height: 300px;">
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-success btn-sm" onclick="confirmAIImage()">
+                                                <i class="bi bi-check-circle me-1"></i>Usa Questa Immagine
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-sm" onclick="regenerateAIImage()">
+                                                <i class="bi bi-arrow-clockwise me-1"></i>Rigenera
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="ai-loading" class="text-center mt-3" style="display: none;">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Generazione in corso...</span>
+                                        </div>
+                                        <p class="mt-2">Generazione immagine in corso...</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="form-check">

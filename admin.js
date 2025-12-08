@@ -7,15 +7,20 @@
 const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
 
+// NOTE: Gemini API integration is available via Edge Function for security
+// API keys should NEVER be exposed in client-side code
+// Use the generate-image-keywords Edge Function instead
+
 let supabase;
 let currentUser = null;
 let currentUserProfile = null;
+let generatedImageUrl = null;
 
 // Inizializzazione
 document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Inizializza Supabase
-        supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Controlla se l'utente è già loggato
         await checkAuthStatus();
@@ -257,7 +262,19 @@ async function createOrUpdateArticle(articleData, articleId = null) {
             data_modifica: now
         };
         
+        let wasPublished = false;
+        let savedArticle = null;
+        
         if (articleId) {
+            // Check if article is being published now
+            const { data: oldArticle } = await supabase
+                .from('articoli')
+                .select('stato')
+                .eq('id', articleId)
+                .single();
+            
+            wasPublished = oldArticle?.stato !== 'pubblicato' && articleData.stato === 'pubblicato';
+            
             // Update existing article
             articleToSave.autore_id = currentUser.id;
             const { data, error } = await supabase
@@ -268,13 +285,16 @@ async function createOrUpdateArticle(articleData, articleId = null) {
                 .single();
                 
             if (error) throw error;
+            savedArticle = data;
             showMessage('Articolo aggiornato con successo!', 'success');
-            return data;
             
         } else {
             // Create new article
             articleToSave.autore_id = currentUser.id;
             articleToSave.data_creazione = now;
+            
+            // Check if creating as published
+            wasPublished = articleData.stato === 'pubblicato';
             
             const { data, error } = await supabase
                 .from('articoli')
@@ -283,9 +303,22 @@ async function createOrUpdateArticle(articleData, articleId = null) {
                 .single();
                 
             if (error) throw error;
+            savedArticle = data;
             showMessage('Articolo creato con successo!', 'success');
-            return data;
         }
+        
+        // Send newsletter if article was just published
+        if (wasPublished && savedArticle) {
+            try {
+                showMessage('Invio newsletter in corso...', 'info');
+                await sendNewsletterForArticle(savedArticle.id);
+            } catch (newsletterError) {
+                console.error('Newsletter error:', newsletterError);
+                showMessage('Articolo salvato, ma errore nell\'invio newsletter', 'warning');
+            }
+        }
+        
+        return savedArticle;
         
     } catch (error) {
         console.error('Error saving article:', error);
@@ -749,7 +782,7 @@ async function initializeAdmin() {
             return;
         }
         
-        supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         await checkAuthStatus();
         setupEventListeners();
         
@@ -767,3 +800,220 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
     showMessage('Connessione persa. Alcune funzioni potrebbero non funzionare.', 'warning');
 });
+
+// ============================================
+// GEMINI AI IMAGE GENERATION
+// ============================================
+
+/**
+ * Generate AI image based on article title and content
+ */
+async function generateAIImage() {
+    const title = document.getElementById('article-title')?.value || '';
+    const content = document.getElementById('article-content')?.value || '';
+    
+    if (!title || !content) {
+        showMessage('Inserisci titolo e contenuto prima di generare l\'immagine', 'error');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('ai-loading').style.display = 'block';
+    document.getElementById('ai-image-preview').style.display = 'none';
+    document.getElementById('generate-ai-image').disabled = true;
+    
+    try {
+        // Step 1: Use Gemini to generate image search keywords
+        const keywords = await generateImageKeywords(title, content);
+        
+        // Step 2: Fetch image from Unsplash based on keywords
+        const imageUrl = await fetchUnsplashImage(keywords);
+        
+        if (imageUrl) {
+            generatedImageUrl = imageUrl;
+            
+            // Show preview
+            document.getElementById('ai-preview-img').src = imageUrl;
+            document.getElementById('ai-image-preview').style.display = 'block';
+            document.getElementById('ai-loading').style.display = 'none';
+            
+            showMessage('Immagine generata con successo!', 'success');
+        } else {
+            throw new Error('Impossibile generare l\'immagine');
+        }
+    } catch (error) {
+        console.error('Error generating AI image:', error);
+        showMessage('Errore nella generazione dell\'immagine: ' + error.message, 'error');
+        document.getElementById('ai-loading').style.display = 'none';
+    } finally {
+        document.getElementById('generate-ai-image').disabled = false;
+    }
+}
+
+/**
+ * Use Gemini AI to generate professional image search keywords via Edge Function
+ * SECURITY: API keys are stored server-side only
+ */
+async function generateImageKeywords(title, content) {
+    try {
+        // Call Edge Function to securely use Gemini API
+        const { data, error } = await supabase.functions.invoke('generate-image-keywords', {
+            body: {
+                title: title,
+                content: content.substring(0, 500)
+            }
+        });
+        
+        if (error) {
+            console.error('Edge function error:', error);
+            throw error;
+        }
+        
+        const keywords = data?.keywords || 'school, students, education, learning';
+        console.log('Generated keywords:', keywords);
+        return keywords;
+        
+    } catch (error) {
+        console.error('Error calling generate-image-keywords function:', error);
+        // Fallback to simple keyword extraction from title
+        return extractSimpleKeywords(title, content);
+    }
+}
+
+/**
+ * Fallback: Extract simple keywords from title/content
+ */
+function extractSimpleKeywords(title, content) {
+    // Simple fallback: use important words from title
+    const words = title.toLowerCase().split(' ')
+        .filter(w => w.length > 4)  // Only words with 5+ chars
+        .slice(0, 3);  // Max 3 keywords
+    
+    return words.length > 0 ? words.join(', ') : 'school, education, students';
+}
+
+/**
+ * Fetch professional image from Unsplash
+ */
+async function fetchUnsplashImage(keywords) {
+    // Using Unsplash Source API (no key required, but limited)
+    // For production, use official Unsplash API with proper authentication
+    
+    const query = encodeURIComponent(keywords.split(',')[0].trim());
+    const unsplashUrl = `https://source.unsplash.com/1200x600/?${query},professional,news`;
+    
+    return unsplashUrl;
+}
+
+/**
+ * Confirm and use the generated AI image
+ */
+function confirmAIImage() {
+    if (generatedImageUrl) {
+        document.getElementById('article-image').value = generatedImageUrl;
+        showMessage('Immagine selezionata! Salva l\'articolo per confermare.', 'success');
+        
+        // Switch back to manual tab to show the URL
+        const manualTab = new bootstrap.Tab(document.getElementById('manual-tab'));
+        manualTab.show();
+    }
+}
+
+/**
+ * Regenerate AI image with different parameters
+ */
+async function regenerateAIImage() {
+    await generateAIImage();
+}
+
+
+// ============================================
+// NEWSLETTER SYSTEM
+// ============================================
+
+/**
+ * Send newsletter to all subscribers when article is published
+ */
+async function sendNewsletterForArticle(articleId) {
+    try {
+        console.log('Sending newsletter for article:', articleId);
+        
+        // Call Supabase Edge Function
+        const { data, error } = await supabase.functions.invoke('send-newsletter', {
+            body: { articleId }
+        });
+        
+        if (error) {
+            console.error('Newsletter send error:', error);
+            throw error;
+        }
+        
+        console.log('Newsletter sent successfully:', data);
+        
+        if (data.sentCount > 0) {
+            showMessage(`Newsletter inviata a ${data.sentCount} iscritti!`, 'success');
+        } else {
+            showMessage('Nessun iscritto attivo per la newsletter', 'info');
+        }
+        
+        return data;
+        
+    } catch (error) {
+        console.error('Error in sendNewsletterForArticle:', error);
+        throw error;
+    }
+}
+
+/**
+ * Preview newsletter before sending (for testing)
+ */
+async function previewNewsletter(articleId) {
+    try {
+        const { data: article, error } = await supabase
+            .from('articoli')
+            .select(`
+                id,
+                titolo,
+                sommario,
+                immagine_url,
+                profili_redattori(nome_visualizzato)
+            `)
+            .eq('id', articleId)
+            .single();
+        
+        if (error) throw error;
+        
+        const author = article.profili_redattori?.nome_visualizzato || 'Redazione Cesaris';
+        const articleUrl = `${window.location.origin}/articolo/${article.id}`;
+        
+        const previewHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <h1>📰 Giornale Cesaris</h1>
+                    <p>Nuovo Articolo Pubblicato!</p>
+                </div>
+                <div style="background: white; padding: 30px; border: 1px solid #e2e8f0;">
+                    <h2>${article.titolo}</h2>
+                    ${article.immagine_url ? `<img src="${article.immagine_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;">` : ''}
+                    <p>${article.sommario || ''}</p>
+                    <p><strong>Autore:</strong> ${author}</p>
+                    <a href="${articleUrl}" style="display: inline-block; background: #fbbf24; color: #1e3a8a; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 20px 0;">
+                        Leggi l'articolo completo
+                    </a>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-radius: 0 0 10px 10px;">
+                    <p>&copy; 2025 Giornale Cesaris. Tutti i diritti riservati.</p>
+                </div>
+            </div>
+        `;
+        
+        // Open preview in new window
+        const previewWindow = window.open('', 'Newsletter Preview', 'width=700,height=800');
+        previewWindow.document.write(previewHtml);
+        previewWindow.document.close();
+        
+    } catch (error) {
+        console.error('Error previewing newsletter:', error);
+        showMessage('Errore nel caricamento preview', 'error');
+    }
+}
