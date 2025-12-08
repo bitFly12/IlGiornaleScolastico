@@ -8,49 +8,7 @@ function initSupabase(url, key) {
     console.log('Supabase inizializzato');
 }
 
-// 1. CARICAMENTO ARTICOLI
-async function caricaUltimiArticoli() {
-    try {
-        const { data: articoli, error } = await supabaseClient
-            .from('articoli')
-            .select(`
-                id,
-                titolo,
-                sommario,
-                contenuto,
-                categoria,
-                autore_id,
-                data_pubblicazione,
-                immagine_url,
-                visualizzazioni,
-                profili_redattori(nome_visualizzato)
-            `)
-            .eq('stato', 'pubblicato')
-            .order('data_pubblicazione', { ascending: false })
-            .range(articoliCaricati, articoliCaricati + ARTICOLI_PER_PAGINA - 1);
 
-        if (error) throw error;
-
-        if (articoli.length > 0) {
-            mostraArticoli(articoli);
-            articoliCaricati += articoli.length;
-            
-            // Aggiorna contatore articoli
-            document.getElementById('contatore-articoli').textContent = 
-                parseInt(document.getElementById('contatore-articoli').textContent) + articoli.length;
-        } else {
-            document.getElementById('carica-altri').disabled = true;
-            document.getElementById('carica-altri').textContent = 'Nessun altro articolo';
-        }
-    } catch (error) {
-        console.error('Errore caricamento articoli:', error);
-        document.getElementById('container-articoli').innerHTML = `
-            <div class="alert alert-danger">
-                Errore nel caricamento degli articoli. Riprova più tardi.
-            </div>
-        `;
-    }
-}
 
 function mostraArticoli(articoli) {
     const container = document.getElementById('container-articoli');
