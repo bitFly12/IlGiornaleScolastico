@@ -103,6 +103,11 @@
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Clear any existing session on page load (force re-login)
+        document.addEventListener('DOMContentLoaded', async () => {
+            await supabase.auth.signOut();
+        });
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -110,27 +115,40 @@
             const password = document.getElementById('password').value;
             const msgDiv = document.getElementById('message');
             
+            msgDiv.innerHTML = '<div class="alert alert-info">Autenticazione in corso...</div>';
+            
             try {
+                // Sign in with password
                 const { data, error } = await supabase.auth.signInWithPassword({
-                    email, password
+                    email, 
+                    password
                 });
                 
                 if (error) throw error;
                 
-                // Verifica se è caporedattore
+                // Logout from all other devices (sign out and sign back in)
+                await supabase.auth.signOut({ scope: 'others' });
+                
+                // Get user profile
                 const { data: profile } = await supabase
                     .from('profili_redattori')
-                    .select('ruolo')
+                    .select('ruolo, email')
                     .eq('id', data.user.id)
                     .single();
                 
-                if (profile && profile.ruolo === 'Caporedattore') {
+                // Role-based routing: boss email → admin, reporter → area-riservata
+                const bossEmails = ['capo@cesaris.edu', 'admin@cesaris.edu', 'caporedattore@cesaris.edu'];
+                const isBoss = bossEmails.includes(email.toLowerCase()) || 
+                               (profile && profile.ruolo === 'Caporedattore');
+                
+                if (isBoss) {
                     window.location.href = 'admin-panel.html';
                 } else {
                     window.location.href = 'area-riservata.html';
                 }
             } catch (error) {
-                msgDiv.innerHTML = '<div class="alert alert-danger">Credenziali errate</div>';
+                console.error('Login error:', error);
+                msgDiv.innerHTML = '<div class="alert alert-danger">Credenziali errate o errore di connessione</div>';
             }
         });
     </script>
