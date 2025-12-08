@@ -15,7 +15,7 @@ let currentUserProfile = null;
 document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Inizializza Supabase
-        supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // Controlla se l'utente è già loggato
         await checkAuthStatus();
@@ -749,7 +749,7 @@ async function initializeAdmin() {
             return;
         }
         
-        supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         await checkAuthStatus();
         setupEventListeners();
         

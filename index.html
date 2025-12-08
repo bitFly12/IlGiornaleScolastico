@@ -64,19 +64,14 @@
         .logo-cesaris {
             width: 45px;
             height: 45px;
-            background: white;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            padding: 3px;
         }
         
-        .logo-cesaris img {
+        .logo-cesaris svg {
             width: 100%;
             height: 100%;
-            object-fit: contain;
         }
         
         .nav-link {
@@ -435,11 +430,7 @@
         <div class="container">
             <a class="navbar-brand" href="/">
                 <div class="logo-cesaris">
-                    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEBEWFRUXFRYVFRUVFRUXFRUYFRYZFhcWFhcYHSggGB0nHRcXITEhJSkrLi4uFyAzODMuNygtLisBCgoKDg0OGxAQGy0lICYvLS0tLy0tLS0rKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBEQACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABQYBBAcDAgj/xABLEAACAQICBgYGBQkGBQUBAAABAgADEQQFBhIhMUFRBxMiYXGBFDJCkaGxIzNSwdEVNFRicnOTsvAkNVNjguESc4OS0gglwsPh8f/EABsBAQACAwEBAAAAAAAAAAAAAAABBQMEBgIH/8QAOREBAAIBAwMCAwYDCQEBAAAAAAECAwQSBRMhFDFBUWEGFSJxkaFCsdEjMpLB4fDxNENSYnKBsiQW/9gAMAwEAAhEDEQA/AO4wEBAQEBAQEBAQEBAQNfFodjL6y7QOY4r5/O0D1pVAwBG47RA+4CAgICAgICAgICAgICAgICAgICAgICAgICAgedWqFtfiQB3kwPGmdR9U7muV7jvZfv8AfygbUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQNWkNdi3Bbqvefab7vI84HpiaOsLDYd4PIjcYGcNV1lvuO4jkRvED1gICAgICAgICAgICAgICAgICAgICAgICAga+Lc7FXe2y/IcW/wB8SIHtTQAADYALDygfUDVfsPf2WsD3NuU+e73QNoQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA+Xa2/ZA8MIpN6h3tu7lG4/fd590DZgIHxVphgVO4i0DywlQ2Kt6y7D38m8x8bjhA2ICAgICAgICAgICAgICAgICAgICAgICBF5nmdFHFKrWpp7TB3VSVvsFieJHuB5z1FZntCJtEd4ZGkGE/SqH8VPxk+nb2Rz19z+0GE/S6H8VPxj07exz19z+0GE/SqH8VPxj07exz19z+0OE/S6H8VPxj07eyPUr7tetnmFDB1xNEncQKqbQfPeN/v5x6dvZPPX3TQM8PTMBAQEBAQEBAQEBAQEBAQEBAQEBAQNXMcYlGm9WobKgLHy4DvO6TWJmdoRMxEd4R
-                <span>Giornale Cesaris</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <svg width="45" height="45" viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg"><circle cx="22.5" cy="22.5" r="22" fill="#fbbf24"/><text x="22.5" y="30" font-family="Playfair Display, serif" font-size="24" font-weight="700" fill="#1e3a8a" text-anchor="middle">C</text></svg>
                 <span class="navbar-toggler-icon"></span>
             </button>
             
@@ -631,6 +622,10 @@
         let supabase;
         let articlesLoaded = 0;
         const ARTICLES_PER_PAGE = 6;
+        
+        // Fallback image - SVG data URI (no external dependency)
+        const FALLBACK_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzYiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkdpb3JuYWxlIENlc2FyaXM8L3RleHQ+PC9zdmc+';
+        const FALLBACK_IMAGE_SMALL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkdpb3JuYWxlIENlc2FyaXM8L3RleHQ+PC9zdmc+';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
@@ -753,7 +748,7 @@
         // Create featured card
         function createFeaturedCard(article) {
             const author = article.profili_redattori?.nome_visualizzato || 'Redazione';
-            const image = article.immagine_url || 'https://via.placeholder.com/800x400/1e3a8a/ffffff?text=Cesaris';
+            const image = article.immagine_url || FALLBACK_IMAGE;
             
             return `
                 <div class="col-md-4">
@@ -777,7 +772,7 @@
         // Create article card
         function createArticleCard(article) {
             const author = article.profili_redattori?.nome_visualizzato || 'Redazione';
-            const image = article.immagine_url || 'https://via.placeholder.com/600x300/1e3a8a/ffffff?text=Cesaris';
+            const image = article.immagine_url || FALLBACK_IMAGE_SMALL;
             const date = formatDate(article.data_pubblicazione);
             
             return `
