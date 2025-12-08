@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tutti gli articoli del Giornale Scolastico Cesaris">
+    <title>Tutti gli Articoli - Giornale Cesaris</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --cesaris-blue: #1e3a8a;
+            --cesaris-blue-dark: #1e293b;
+            --cesaris-yellow: #fbbf24;
+            --cesaris-yellow-light: #fef3c7;
+            --cesaris-accent: #3b82f6;
+            --cesaris-gray: #64748b;
+            --cesaris-light: #f8fafc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1e293b;
+            background-color: var(--cesaris-light);
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        /* Navbar */
+        .navbar-cesaris {
+            background: linear-gradient(135deg, var(--cesaris-blue) 0%, var(--cesaris-blue-dark) 100%);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-cesaris {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem !important;
+        }
+        
+        .nav-link:hover {
+            color: var(--cesaris-yellow) !important;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cesaris-yellow {
+            background: var(--cesaris-yellow);
+            color: var(--cesaris-blue);
+            font-weight: 600;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .btn-cesaris-yellow:hover {
+            background: #f59e0b;
+            color: var(--cesaris-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4);
+        }
+        
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, var(--cesaris-blue) 0%, var(--cesaris-blue-dark) 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 76px;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Filter bar */
+        .filter-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .filter-btn {
+            background: transparent;
+            border: 2px solid #e2e8f0;
+            color: var(--cesaris-gray);
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 0.25rem;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--cesaris-blue);
+            border-color: var(--cesaris-blue);
+            color: white;
+        }
+        
+        /* Article cards */
+        .article-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.15);
+            border-color: var(--cesaris-accent);
+        }
+        
+        .article-image {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .category-badge {
+            display: inline-block;
+            background: var(--cesaris-yellow-light);
+            color: var(--cesaris-blue);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .article-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--cesaris-blue-dark);
+            margin: 0.75rem 0;
+            line-height: 1.4;
+        }
+        
+        .article-excerpt {
+            color: var(--cesaris-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--cesaris-gray);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Loading */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--cesaris-yellow-light);
+            border-top-color: var(--cesaris-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 2rem; }
+            .filter-bar { padding: 1rem; }
+            .filter-btn { padding: 0.4rem 1rem; font-size: 0.875rem; }
+        }
+        
+        /* Search bar */
+        .search-bar {
+            max-width: 600px;
+            margin: 1.5rem auto;
+        }
+        
+        .search-input {
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            border-color: var(--cesaris-blue);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-cesaris fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo-cesaris">
+                    <svg width="45" height="45" viewBox="0 0 45 45" xmlns="http://www.w3.org/2000/svg"><circle cx="22.5" cy="22.5" r="22" fill="#fbbf24"/><text x="22.5" y="30" font-family="Playfair Display, serif" font-size="24" font-weight="700" fill="#1e3a8a" text-anchor="middle">C</text></svg>
+                </div>
+                <span>Giornale Cesaris</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="articoli.html">Articoli</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#eventi">Eventi</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#redazione">Redazione</a></li>
+                    <li class="nav-item ms-3">
+                        <a href="login.html" class="btn btn-cesaris-yellow">
+                            <i class="bi bi-pencil-square"></i> Area Redazione
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Tutti gli Articoli</h1>
+            <p class="mb-0">Esplora tutto il contenuto del Giornale Cesaris</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" id="search-input" class="form-control search-input" placeholder="Cerca articoli...">
+        </div>
+        
+        <!-- Filters -->
+        <div class="filter-bar">
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                <button class="filter-btn active" data-category="all">Tutti</button>
+                <button class="filter-btn" data-category="Notizie">Notizie</button>
+                <button class="filter-btn" data-category="Sport">Sport</button>
+                <button class="filter-btn" data-category="Cultura">Cultura</button>
+                <button class="filter-btn" data-category="Eventi">Eventi</button>
+                <button class="filter-btn" data-category="Interviste">Interviste</button>
+                <button class="filter-btn" data-category="Opinioni">Opinioni</button>
+            </div>
+        </div>
+
+        <!-- Articles Grid -->
+        <div id="articles-container" class="row g-4">
+            <div class="col-12 text-center py-5">
+                <div class="loading-spinner"></div>
+                <p class="mt-3 text-muted">Caricamento articoli...</p>
+            </div>
+        </div>
+
+        <!-- Load More -->
+        <div class="text-center mt-4">
+            <button id="load-more-btn" class="btn btn-outline-primary btn-lg px-5" style="display:none;">
+                <i class="bi bi-arrow-down-circle me-2"></i>Carica Altri
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4 bg-dark text-white text-center">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 Giornale Cesaris. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
+        
+        let supabase;
+        let articlesLoaded = 0;
+        const ARTICLES_PER_PAGE = 12;
+        let currentCategory = 'all';
+        let currentSearch = '';
+        
+        const FALLBACK_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFlM2E4YSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkdpb3JuYWxlIENlc2FyaXM8L3RleHQ+PC9zdmc+';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            await loadArticles();
+            setupFilters();
+            setupSearch();
+        });
+
+        // Load articles
+        async function loadArticles(loadMore = false) {
+            try {
+                if (!loadMore) {
+                    articlesLoaded = 0;
+                }
+                
+                let query = supabase
+                    .from('articoli')
+                    .select(`
+                        id, titolo, sommario, immagine_url, categoria,
+                        data_pubblicazione, visualizzazioni,
+                        profili_redattori!inner(nome_visualizzato)
+                    `)
+                    .eq('stato', 'pubblicato')
+                    .order('data_pubblicazione', { ascending: false })
+                    .range(articlesLoaded, articlesLoaded + ARTICLES_PER_PAGE - 1);
+
+                if (currentCategory !== 'all') {
+                    query = query.eq('categoria', currentCategory);
+                }
+                
+                if (currentSearch) {
+                    query = query.or(`titolo.ilike.%${currentSearch}%,sommario.ilike.%${currentSearch}%`);
+                }
+
+                const { data, error } = await query;
+
+                if (error) throw error;
+
+                const container = document.getElementById('articles-container');
+                
+                if (data && data.length > 0) {
+                    if (!loadMore) {
+                        container.innerHTML = '';
+                    }
+                    container.innerHTML += data.map(article => createArticleCard(article)).join('');
+                    articlesLoaded += data.length;
+                    
+                    document.getElementById('load-more-btn').style.display = 
+                        data.length === ARTICLES_PER_PAGE ? 'block' : 'none';
+                } else if (!loadMore) {
+                    container.innerHTML = '<p class="text-center text-muted col-12">Nessun articolo trovato</p>';
+                    document.getElementById('load-more-btn').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading articles:', error);
+                document.getElementById('articles-container').innerHTML = 
+                    '<p class="text-center text-danger col-12">Errore caricamento articoli</p>';
+            }
+        }
+
+        // Create article card
+        function createArticleCard(article) {
+            const author = article.profili_redattori?.nome_visualizzato || 'Redazione';
+            const image = article.immagine_url || FALLBACK_IMAGE;
+            const date = formatDate(article.data_pubblicazione);
+            
+            return `
+                <div class="col-md-6 col-lg-4">
+                    <div class="article-card" onclick="openArticle('${article.id}')">
+                        <img src="${image}" class="article-image" alt="${article.titolo}">
+                        <div class="p-4 d-flex flex-column" style="flex: 1;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="category-badge">${article.categoria || 'Generale'}</span>
+                                <small class="text-muted">${date}</small>
+                            </div>
+                            <h4 class="article-title">${article.titolo}</h4>
+                            <p class="article-excerpt">${(article.sommario || '').substring(0, 120)}${article.sommario && article.sommario.length > 120 ? '...' : ''}</p>
+                            <div class="article-meta mt-auto">
+                                <span><i class="bi bi-person me-1"></i>${author}</span>
+                                <span><i class="bi bi-eye me-1"></i>${article.visualizzazioni || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Setup filters
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = btn.dataset.category;
+                    loadArticles();
+                });
+            });
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            let debounceTimer;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    currentSearch = e.target.value.trim();
+                    loadArticles();
+                }, 500);
+            });
+        }
+
+        // Load more
+        document.getElementById('load-more-btn').addEventListener('click', () => loadArticles(true));
+
+        // Open article (redirect to index.html with modal)
+        function openArticle(id) {
+            window.location.href = `index.html#article-${id}`;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('it-IT', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>
