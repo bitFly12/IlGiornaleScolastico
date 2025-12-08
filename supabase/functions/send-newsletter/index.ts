@@ -95,7 +95,7 @@ serve(async (req) => {
           </div>
           <div class="footer">
             <p>&copy; 2025 Giornale Cesaris. Tutti i diritti riservati.</p>
-            <p><a href="${Deno.env.get('SUPABASE_URL')}/unsubscribe">Annulla iscrizione</a></p>
+            <p><small>Hai ricevuto questa email perché sei iscritto alla newsletter del Giornale Cesaris.</small></p>
           </div>
         </div>
       </body>

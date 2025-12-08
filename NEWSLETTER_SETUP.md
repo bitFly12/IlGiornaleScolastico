@@ -169,3 +169,28 @@ async function sendNewsletterManual(articleId) {
 - [ ] Track open rates and clicks
 - [ ] A/B testing for subject lines
 - [ ] Subscriber segmentation
+
+## Gemini AI Setup (for Image Generation)
+
+### Deploy generate-image-keywords Function
+
+The Gemini API key is now securely stored server-side:
+
+```bash
+# Set the Gemini API secret
+supabase secrets set GEMINI_API_KEY=AIzaSyDXwkvfGymYKD5pN3cV0f8ofC54j9IcS90
+
+# Deploy the function
+supabase functions deploy generate-image-keywords
+```
+
+### How It Works
+
+1. User clicks "Genera Immagine con AI" in admin area
+2. Client calls Edge Function with article title/content
+3. Edge Function securely calls Gemini API
+4. Keywords are returned to client
+5. Client fetches image from Unsplash
+
+**Security**: API key is NEVER exposed to client-side code.
+

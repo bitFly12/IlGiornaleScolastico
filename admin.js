@@ -7,9 +7,9 @@
 const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
 
-// Configurazione Gemini AI
-const GEMINI_API_KEY = 'AIzaSyDXwkvfGymYKD5pN3cV0f8ofC54j9IcS90';
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+// NOTE: Gemini API integration is available via Edge Function for security
+// API keys should NEVER be exposed in client-side code
+// Use the generate-image-keywords Edge Function instead
 
 let supabase;
 let currentUser = null;
@@ -851,45 +851,45 @@ async function generateAIImage() {
 }
 
 /**
- * Use Gemini AI to generate professional image search keywords
+ * Use Gemini AI to generate professional image search keywords via Edge Function
+ * SECURITY: API keys are stored server-side only
  */
 async function generateImageKeywords(title, content) {
-    const prompt = `Based on this news article, generate 3-5 professional, realistic photo search keywords that would be suitable for a news publication. Focus on real-world photography, not illustrations or cartoons.
-
-Article Title: ${title}
-Article Summary: ${content.substring(0, 500)}
-
-Respond with ONLY comma-separated keywords, nothing else. Example: "students, classroom, education, learning"`;
-
     try {
-        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
+        // Call Edge Function to securely use Gemini API
+        const { data, error } = await supabase.functions.invoke('generate-image-keywords', {
+            body: {
+                title: title,
+                content: content.substring(0, 500)
+            }
         });
         
-        if (!response.ok) {
-            throw new Error('Gemini API error: ' + response.status);
+        if (error) {
+            console.error('Edge function error:', error);
+            throw error;
         }
         
-        const data = await response.json();
-        const keywords = data.candidates[0]?.content?.parts[0]?.text?.trim() || 'school, students, education';
-        
+        const keywords = data?.keywords || 'school, students, education, learning';
         console.log('Generated keywords:', keywords);
         return keywords;
+        
     } catch (error) {
-        console.error('Gemini API error:', error);
-        // Fallback keywords
-        return 'school, students, education, learning';
+        console.error('Error calling generate-image-keywords function:', error);
+        // Fallback to simple keyword extraction from title
+        return extractSimpleKeywords(title, content);
     }
+}
+
+/**
+ * Fallback: Extract simple keywords from title/content
+ */
+function extractSimpleKeywords(title, content) {
+    // Simple fallback: use important words from title
+    const words = title.toLowerCase().split(' ')
+        .filter(w => w.length > 4)  // Only words with 5+ chars
+        .slice(0, 3);  // Max 3 keywords
+    
+    return words.length > 0 ? words.join(', ') : 'school, education, students';
 }
 
 /**
