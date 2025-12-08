@@ -153,6 +153,27 @@
         }
         
         /* Featured Article Card */
+        .hero-article-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            margin-bottom: 2rem;
+        }
+        
+        .hero-article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(30, 58, 138, 0.2);
+        }
+        
+        .hero-article-image {
+            height: 450px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
         .featured-card {
             background: white;
             border-radius: 20px;
@@ -161,6 +182,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             height: 100%;
+            margin-bottom: 1rem;
         }
         
         .featured-card:hover {
@@ -285,6 +307,11 @@
             top: 100px;
         }
         
+        .events-card .footer-title {
+            color: var(--cesaris-blue);
+            font-weight: 700;
+        }
+        
         .event-item {
             padding: 1rem;
             border-left: 4px solid var(--cesaris-yellow);
@@ -350,16 +377,21 @@
         }
         
         .footer-link {
-            color: rgba(255,255,255,0.8);
+            color: var(--cesaris-blue);
             text-decoration: none;
             transition: all 0.3s;
             display: block;
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
         
         .footer-link:hover {
             color: var(--cesaris-yellow);
             padding-left: 5px;
+        }
+        
+        .footer-link i {
+            color: var(--cesaris-accent);
         }
         
         .social-icon {
@@ -395,6 +427,30 @@
         
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        /* Skeleton loading for cards */
+        .skeleton-card {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 15px;
+            height: 300px;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Smooth transitions for all interactive elements */
+        .featured-card, .article-card, .event-item, .btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Hover feedback */
+        .featured-card:hover, .article-card:hover {
+            cursor: pointer;
         }
         
         /* Responsive */
@@ -665,7 +721,20 @@
 
                 const container = document.getElementById('featured-container');
                 if (data && data.length > 0) {
-                    container.innerHTML = data.map(article => createFeaturedCard(article)).join('');
+                    // First article is HERO
+                    let html = '';
+                    if (data[0]) {
+                        html += createHeroCard(data[0]);
+                    }
+                    // Remaining articles are smaller featured cards
+                    if (data.length > 1) {
+                        html += '<div class="col-md-6">';
+                        for (let i = 1; i < data.length && i < 3; i++) {
+                            html += createSmallFeaturedCard(data[i]);
+                        }
+                        html += '</div>';
+                    }
+                    container.innerHTML = html;
                 } else {
                     container.innerHTML = '<p class="text-center text-muted">Nessun articolo in evidenza</p>';
                 }
@@ -743,6 +812,61 @@
             } catch (error) {
                 console.error('Error loading events:', error);
             }
+        }
+
+        // Create HERO card (large featured article)
+        function createHeroCard(article) {
+            const author = article.profili_redattori?.nome_visualizzato || 'Redazione';
+            const image = article.immagine_url || FALLBACK_IMAGE;
+            const date = formatDate(article.data_pubblicazione);
+            
+            return `
+                <div class="col-md-6">
+                    <div class="hero-article-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
+                        <div class="position-relative">
+                            <span class="featured-badge">⭐ Articolo Principale</span>
+                            <img src="${image}" class="hero-article-image" alt="${article.titolo}">
+                        </div>
+                        <div class="p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="category-badge">${article.categoria || 'Generale'}</span>
+                                <small class="text-muted">${date}</small>
+                            </div>
+                            <h2 class="article-title">${article.titolo}</h2>
+                            <p class="article-excerpt fs-5">${article.sommario || ''}</p>
+                            <div class="article-meta">
+                                <span><i class="bi bi-person me-1"></i>${author}</span>
+                                <span><i class="bi bi-eye me-1"></i>${article.visualizzazioni || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Create small featured card
+        function createSmallFeaturedCard(article) {
+            const author = article.profili_redattori?.nome_visualizzato || 'Redazione';
+            const image = article.immagine_url || FALLBACK_IMAGE_SMALL;
+            const date = formatDate(article.data_pubblicazione);
+            
+            return `
+                <div class="featured-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
+                    <img src="${image}" class="article-image" alt="${article.titolo}" style="height: 200px;">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="category-badge">${article.categoria || 'Generale'}</span>
+                            <small class="text-muted">${date}</small>
+                        </div>
+                        <h5 class="article-title">${article.titolo}</h5>
+                        <p class="article-excerpt small">${(article.sommario || '').substring(0, 100)}...</p>
+                        <div class="article-meta">
+                            <span><i class="bi bi-person me-1"></i>${author}</span>
+                            <span><i class="bi bi-eye me-1"></i>${article.visualizzazioni || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // Create featured card
