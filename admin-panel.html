@@ -1,10 +1,1459 @@
-<!-- Note: This is a placeholder. The actual file content would be retrieved and modified, but since we're updating a specific line, here's the context:
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Giornale Cesaris</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --cesaris-blue: #1e3a8a;
+            --cesaris-blue-dark: #1e293b;
+            --cesaris-yellow: #fbbf24;
+            --cesaris-accent: #3b82f6;
+            --sidebar-width: 280px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: linear-gradient(180deg, var(--cesaris-blue) 0%, var(--cesaris-blue-dark) 100%);
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-header {
+            padding: 1. 5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        . sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--cesaris-yellow);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cesaris-blue);
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .admin-badge {
+            background: #ef4444;
+            color: white;
+            padding: 0. 25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-section {
+            padding: 0.5rem 1. 5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0. 5);
+            margin-top: 1rem;
+        }
+        
+        .nav-item-admin {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        
+        .nav-item-admin:hover,
+        .nav-item-admin.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: var(--cesaris-yellow);
+        }
+        
+        .nav-item-admin i {
+            font-size: 1.1rem;
+            width: 24px;
+        }
+        
+        .nav-item-admin . badge {
+            margin-left: auto;
+            background: var(--cesaris-yellow);
+            color: var(--cesaris-blue);
+        }
+        
+        /* Main Content */
+        .admin-main {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .admin-content {
+            padding: 2rem;
+        }
+        
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        . stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .card-header-admin {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-body-admin {
+            padding: 1.5rem;
+        }
+        
+        /* Tables */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-table th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .admin-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        
+        .admin-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        /* Buttons */
+        .btn-admin {
+            padding: 0. 5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-admin-primary {
+            background: var(--cesaris-blue);
+            color: white;
+        }
+        
+        .btn-admin-primary:hover {
+            background: var(--cesaris-blue-dark);
+            color: white;
+        }
+        
+        .btn-admin-danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .btn-admin-danger:hover {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-admin-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .btn-admin-success:hover {
+            background: #16a34a;
+            color: white;
+        }
+        
+        .btn-admin-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .btn-admin-warning:hover {
+            background: #d97706;
+            color: white;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-published { background: #dcfce7; color: #166534; }
+        .status-draft { background: #e2e8f0; color: #475569; }
+        .status-review { background: #fef3c7; color: #92400e; }
+        .status-active { background: #dbeafe; color: #1e40af; }
+        . status-inactive { background: #fee2e2; color: #991b1b; }
+        
+        /* View Sections */
+        .admin-view {
+            display: none;
+        }
+        
+        .admin-view.active {
+            display: block;
+        }
+        
+        /* Search and Filters */
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding-left: 2. 5rem;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        /* Charts placeholder */
+        .chart-container {
+            height: 300px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+        
+        /* Modal Styles */
+        .modal-admin . modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .modal-admin .modal-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem;
+        }
+        
+        . modal-admin .modal-body {
+            padding: 1.5rem;
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0. 9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .spinner-admin {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--cesaris-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .admin-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex ! important;
+            }
+        }
+        
+        . sidebar-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--cesaris-blue);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        /* User item styles */
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--cesaris-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Activity log */
+        .activity-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        /* Quick actions */
+        .quick-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1. 5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .quick-action:hover {
+            background: var(--cesaris-blue);
+            color: white;
+        }
+        
+        .quick-action i {
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-admin"></div>
+            <p class="mt-3" id="loadingText">Caricamento... </p>
+        </div>
+    </div>
 
-The update changes line 524 from:
-'profili_redattori!inner(nome_visualizzato)'
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
-to:
-'profili_redattori!articoli_autore_id_fkey(nome_visualizzato)'
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">C</div>
+                <span>Cesaris</span>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">Principale</div>
+            <a class="nav-item-admin active" data-view="dashboard">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-item-admin" data-view="analytics">
+                <i class="bi bi-graph-up"></i>
+                <span>Analytics</span>
+            </a>
+            
+            <div class="nav-section">Contenuti</div>
+            <a class="nav-item-admin" data-view="articles">
+                <i class="bi bi-newspaper"></i>
+                <span>Articoli</span>
+                <span class="badge" id="articlesCount">0</span>
+            </a>
+            <a class="nav-item-admin" data-view="categories">
+                <i class="bi bi-tags"></i>
+                <span>Categorie</span>
+            </a>
+            <a class="nav-item-admin" data-view="comments">
+                <i class="bi bi-chat-dots"></i>
+                <span>Commenti</span>
+                <span class="badge" id="pendingComments">0</span>
+            </a>
+            <a class="nav-item-admin" data-view="events">
+                <i class="bi bi-calendar-event"></i>
+                <span>Eventi</span>
+            </a>
+            
+            <div class="nav-section">Utenti</div>
+            <a class="nav-item-admin" data-view="users">
+                <i class="bi bi-people"></i>
+                <span>Redattori</span>
+            </a>
+            <a class="nav-item-admin" data-view="subscribers">
+                <i class="bi bi-envelope"></i>
+                <span>Newsletter</span>
+            </a>
+            
+            <div class="nav-section">Sistema</div>
+            <a class="nav-item-admin" data-view="settings">
+                <i class="bi bi-gear"></i>
+                <span>Impostazioni</span>
+            </a>
+            <a class="nav-item-admin" data-view="logs">
+                <i class="bi bi-clock-history"></i>
+                <span>Log Attività</span>
+            </a>
+            <a class="nav-item-admin" data-view="backup">
+                <i class="bi bi-cloud-download"></i>
+                <span>Backup</span>
+            </a>
+            
+            <hr style="margin: 1rem 1.5rem; border-color: rgba(255,255,255,0.1);">
+            
+            <a class="nav-item-admin" href="index.html">
+                <i class="bi bi-house"></i>
+                <span>Torna al Sito</span>
+            </a>
+            <a class="nav-item-admin" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Esci</span>
+            </a>
+        </nav>
+    </aside>
 
-This corrects the Supabase join syntax to use the proper foreign key relationship name 'articoli_autore_id_fkey' instead of the generic 'inner' modifier.
--->
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="d-flex align-items-center gap-3">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h5 class="mb-0" id="pageTitle">Dashboard</h5>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" class="form-control" placeholder="Cerca..." id="globalSearch">
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-2"></i>
+                        <span id="adminName">Admin</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#" onclick="showView('settings')"><i class="bi bi-gear me-2"></i>Impostazioni</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Esci</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- Dashboard View -->
+            <div class="admin-view active" id="dashboard-view">
+                <!-- Stats -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted mb-1">Articoli Totali</p>
+                                    <h2 class="mb-0" id="statTotalArticles">0</h2>
+                                    <small class="text-success"><i class="bi bi-arrow-up"></i> +12% questo mese</small>
+                                </div>
+                                <div class="stat-icon" style="background: #dbeafe; color: #1e40af;">
+                                    <i class="bi bi-newspaper"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted mb-1">Visualizzazioni</p>
+                                    <h2 class="mb-0" id="statTotalViews">0</h2>
+                                    <small class="text-success"><i class="bi bi-arrow-up"></i> +25% questa settimana</small>
+                                </div>
+                                <div class="stat-icon" style="background: #dcfce7; color: #166534;">
+                                    <i class="bi bi-eye"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted mb-1">Redattori</p>
+                                    <h2 class="mb-0" id="statTotalUsers">0</h2>
+                                    <small class="text-muted">Utenti attivi</small>
+                                </div>
+                                <div class="stat-icon" style="background: #fef3c7; color: #92400e;">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <p class="text-muted mb-1">Newsletter</p>
+                                    <h2 class="mb-0" id="statSubscribers">0</h2>
+                                    <small class="text-muted">Iscritti</small>
+                                </div>
+                                <div class="stat-icon" style="background: #fee2e2; color: #991b1b;">
+                                    <i class="bi bi-envelope"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="content-card mb-4">
+                    <div class="card-header-admin">
+                        <h5 class="mb-0">Azioni Rapide</h5>
+                    </div>
+                    <div class="card-body-admin">
+                        <div class="row g-3">
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="openArticleModal()">
+                                    <i class="bi bi-plus-circle"></i>
+                                    <span>Nuovo Articolo</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="openEventModal()">
+                                    <i class="bi bi-calendar-plus"></i>
+                                    <span>Nuovo Evento</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="openUserModal()">
+                                    <i class="bi bi-person-plus"></i>
+                                    <span>Aggiungi Utente</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="sendBulkNewsletter()">
+                                    <i class="bi bi-send"></i>
+                                    <span>Invia Newsletter</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="exportData()">
+                                    <i class="bi bi-download"></i>
+                                    <span>Esporta Dati</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-4">
+                                <div class="quick-action" onclick="clearCache()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                    <span>Pulisci Cache</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Recent Articles -->
+                    <div class="col-lg-8">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Articoli Recenti</h5>
+                                <button class="btn btn-admin btn-admin-primary btn-sm" onclick="showView('articles')">
+                                    Vedi Tutti
+                                </button>
+                            </div>
+                            <div class="card-body-admin p-0">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Titolo</th>
+                                            <th>Autore</th>
+                                            <th>Stato</th>
+                                            <th>Views</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentArticlesTable">
+                                        <tr><td colspan="5" class="text-center text-muted">Caricamento...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="col-lg-4">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Attività Recente</h5>
+                            </div>
+                            <div class="card-body-admin" id="activityLog">
+                                <p class="text-muted">Caricamento...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles View -->
+            <div class="admin-view" id="articles-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Gestione Articoli</h4>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="articleFilter" onchange="filterArticles()">
+                            <option value="all">Tutti</option>
+                            <option value="pubblicato">Pubblicati</option>
+                            <option value="bozza">Bozze</option>
+                            <option value="in_revisione">In Revisione</option>
+                        </select>
+                        <button class="btn btn-admin btn-admin-primary" onclick="openArticleModal()">
+                            <i class="bi bi-plus me-2"></i>Nuovo Articolo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin p-0">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAllArticles" onchange="selectAllArticles()"></th>
+                                    <th>Titolo</th>
+                                    <th>Categoria</th>
+                                    <th>Autore</th>
+                                    <th>Stato</th>
+                                    <th>Data</th>
+                                    <th>Views</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="articlesTableBody">
+                                <tr><td colspan="8" class="text-center text-muted">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                        <button class="btn btn-admin btn-admin-danger" onclick="bulkDeleteArticles()" id="bulkDeleteBtn" disabled>
+                            <i class="bi bi-trash me-2"></i>Elimina Selezionati
+                        </button>
+                        <button class="btn btn-admin btn-admin-success" onclick="bulkPublishArticles()" id="bulkPublishBtn" disabled>
+                            <i class="bi bi-check-circle me-2"></i>Pubblica Selezionati
+                        </button>
+                    </div>
+                    <nav id="articlesPagination"></nav>
+                </div>
+            </div>
+
+            <!-- Users View -->
+            <div class="admin-view" id="users-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Gestione Redattori</h4>
+                    <button class="btn btn-admin btn-admin-primary" onclick="openUserModal()">
+                        <i class="bi bi-person-plus me-2"></i>Nuovo Redattore
+                    </button>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin" id="usersContainer">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events View -->
+            <div class="admin-view" id="events-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Gestione Eventi</h4>
+                    <button class="btn btn-admin btn-admin-primary" onclick="openEventModal()">
+                        <i class="bi bi-calendar-plus me-2"></i>Nuovo Evento
+                    </button>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin p-0">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Titolo</th>
+                                    <th>Data</th>
+                                    <th>Luogo</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <tr><td colspan="4" class="text-center text-muted">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments View -->
+            <div class="admin-view" id="comments-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Moderazione Commenti</h4>
+                    <div class="d-flex gap-2">
+                        <select class="form-select" id="commentFilter" onchange="filterComments()">
+                            <option value="pending">In Attesa</option>
+                            <option value="approved">Approvati</option>
+                            <option value="all">Tutti</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin" id="commentsContainer">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscribers View -->
+            <div class="admin-view" id="subscribers-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Iscritti Newsletter</h4>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-admin btn-admin-success" onclick="exportSubscribers()">
+                            <i class="bi bi-download me-2"></i>Esporta CSV
+                        </button>
+                        <button class="btn btn-admin btn-admin-primary" onclick="sendBulkNewsletter()">
+                            <i class="bi bi-send me-2"></i>Invia Newsletter
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin p-0">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAllSubs" onchange="selectAllSubscribers()"></th>
+                                    <th>Email</th>
+                                    <th>Data Iscrizione</th>
+                                    <th>Stato</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscribersTableBody">
+                                <tr><td colspan="5" class="text-center text-muted">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories View -->
+            <div class="admin-view" id="categories-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Gestione Categorie</h4>
+                    <button class="btn btn-admin btn-admin-primary" onclick="openCategoryModal()">
+                        <i class="bi bi-plus me-2"></i>Nuova Categoria
+                    </button>
+                </div>
+                
+                <div class="row g-4" id="categoriesContainer">
+                    <p class="text-muted">Caricamento...</p>
+                </div>
+            </div>
+
+            <!-- Analytics View -->
+            <div class="admin-view" id="analytics-view">
+                <h4 class="mb-4">Analytics</h4>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Visualizzazioni per Categoria</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <div class="chart-container" id="categoryChart">
+                                    <i class="bi bi-bar-chart fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Trend Pubblicazioni</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <div class="chart-container" id="trendChart">
+                                    <i class="bi bi-graph-up fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-header-admin">
+                        <h5 class="mb-0">Articoli più Letti</h5>
+                    </div>
+                    <div class="card-body-admin" id="topArticlesContainer">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="admin-view" id="settings-view">
+                <h4 class="mb-4">Impostazioni</h4>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Impostazioni Sito</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <form id="siteSettingsForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome Sito</label>
+                                        <input type="text" class="form-control" id="siteName" value="Giornale Cesaris">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Email Contatto</label>
+                                        <input type="email" class="form-control" id="siteEmail" value="redazione@cesaris.edu. it">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Articoli in Evidenza (max)</label>
+                                        <input type="number" class="form-control" id="maxFeatured" value="3" min="1" max="10">
+                                    </div>
+                                    <button type="submit" class="btn btn-admin btn-admin-primary">Salva Impostazioni</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Manutenzione</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <div class="d-grid gap-3">
+                                    <button class="btn btn-admin btn-admin-warning" onclick="clearCache()">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>Pulisci Cache
+                                    </button>
+                                    <button class="btn btn-admin btn-admin-success" onclick="optimizeDatabase()">
+                                        <i class="bi bi-database me-2"></i>Ottimizza Database
+                                    </button>
+                                    <button class="btn btn-admin btn-admin-primary" onclick="generateSitemap()">
+                                        <i class="bi bi-diagram-3 me-2"></i>Genera Sitemap
+                                    </button>
+                                    <button class="btn btn-admin btn-admin-danger" onclick="enableMaintenanceMode()">
+                                        <i class="bi bi-tools me-2"></i>Modalità Manutenzione
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs View -->
+            <div class="admin-view" id="logs-view">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Log Attività</h4>
+                    <button class="btn btn-admin btn-admin-danger" onclick="clearLogs()">
+                        <i class="bi bi-trash me-2"></i>Pulisci Log
+                    </button>
+                </div>
+                
+                <div class="content-card">
+                    <div class="card-body-admin" id="logsContainer">
+                        <p class="text-muted">Caricamento...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup View -->
+            <div class="admin-view" id="backup-view">
+                <h4 class="mb-4">Backup & Ripristino</h4>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Crea Backup</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <p class="text-muted mb-3">Esporta tutti i dati del sito in formato JSON</p>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-admin btn-admin-primary" onclick="createFullBackup()">
+                                        <i class="bi bi-cloud-download me-2"></i>Backup Completo
+                                    </button>
+                                    <button class="btn btn-admin btn-admin-success" onclick="backupArticles()">
+                                        <i class="bi bi-newspaper me-2"></i>Solo Articoli
+                                    </button>
+                                    <button class="btn btn-admin btn-admin-warning" onclick="backupUsers()">
+                                        <i class="bi bi-people me-2"></i>Solo Utenti
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="content-card">
+                            <div class="card-header-admin">
+                                <h5 class="mb-0">Ripristina Backup</h5>
+                            </div>
+                            <div class="card-body-admin">
+                                <p class="text-muted mb-3">Carica un file di backup per ripristinare i dati</p>
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" id="backupFile" accept=".json">
+                                </div>
+                                <button class="btn btn-admin btn-admin-danger" onclick="restoreBackup()">
+                                    <i class="bi bi-cloud-upload me-2"></i>Ripristina
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Article Modal -->
+    <div class="modal fade modal-admin" id="articleModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="articleModalTitle">Nuovo Articolo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="articleForm">
+                        <input type="hidden" id="articleId">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Titolo *</label>
+                                    <input type="text" class="form-control" id="articleTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sommario</label>
+                                    <textarea class="form-control" id="articleSummary" rows="2"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contenuto *</label>
+                                    <textarea class="form-control" id="articleContent" rows="12" required></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Categoria</label>
+                                    <select class="form-select" id="articleCategory">
+                                        <option value="Notizie">Notizie</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Cultura">Cultura</option>
+                                        <option value="Eventi">Eventi</option>
+                                        <option value="Interviste">Interviste</option>
+                                        <option value="Opinioni">Opinioni</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Stato</label>
+                                    <select class="form-select" id="articleStatus">
+                                        <option value="bozza">Bozza</option>
+                                        <option value="in_revisione">In Revisione</option>
+                                        <option value="pubblicato">Pubblicato</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Immagine URL</label>
+                                    <input type="url" class="form-control" id="articleImage">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Autore</label>
+                                    <select class="form-select" id="articleAuthor">
+                                        <!-- Populated dynamically -->
+                                    </select>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="articleFeatured">
+                                    <label class="form-check-label" for="articleFeatured">In Evidenza</label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-admin btn-admin-primary" onclick="saveArticle()">
+                        <i class="bi bi-save me-2"></i>Salva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal fade modal-admin" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">Nuovo Redattore</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="mb-3">
+                            <label class="form-label">Nome Visualizzato *</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ruolo</label>
+                            <select class="form-select" id="userRole">
+                                <option value="Reporter">Reporter</option>
+                                <option value="Editore">Editore</option>
+                                <option value="Caporedattore">Caporedattore</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" id="userBio" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-admin btn-admin-primary" onclick="saveUser()">
+                        <i class="bi bi-save me-2"></i>Salva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal fade modal-admin" id="eventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalTitle">Nuovo Evento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId">
+                        <div class="mb-3">
+                            <label class="form-label">Titolo *</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descrizione</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Data *</label>
+                            <input type="datetime-local" class="form-control" id="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Luogo</label>
+                            <input type="text" class="form-control" id="eventLocation">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-admin btn-admin-primary" onclick="saveEvent()">
+                        <i class="bi bi-save me-2"></i>Salva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr. net/npm/bootstrap@5. 3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ============================================
+        // ADMIN PANEL - 20+ Functions Implementation
+        // ============================================
+        
+        const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LMbRCoJa_QOPXZv4HKPGrRb7H6Xql-nuWcQ7Zln4';
+        
+        let supabase;
+        let currentUser = null;
+        let currentProfile = null;
+        let selectedArticles = [];
+        let selectedSubscribers = [];
+        
+        // Modals
+        let articleModal, userModal, eventModal;
+
+        // ============================================
+        // 1.  INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Initialize modals
+            articleModal = new bootstrap.Modal(document.getElementById('articleModal'));
+            userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+            
+            await checkAdminAuth();
+            setupEventListeners();
+        });
+
+        // ============================================
+        // 2. AUTHENTICATION CHECK
+        // ============================================
+        async function checkAdminAuth() {
+            showLoading(true, 'Verifica autorizzazioni...');
+            
+            try {
+                const { data: { session } } = await supabase. auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                currentUser = session.user;
+                
+                const { data: profile } = await supabase
+                    .from('profili_redattori')
+                    .select('*')
+                    .eq('id', currentUser.id)
+                    .single();
+                
+                currentProfile = profile;
+                
+                // Check if user is admin
+                const adminRoles = ['Caporedattore', 'Editore'];
+                const adminEmails = ['capo@cesaris.edu', 'admin@cesaris.edu', 'caporedattore@cesaris. edu'];
+                
+                if (! adminRoles.includes(profile?. ruolo) && !adminEmails.includes(currentUser.email. toLowerCase())) {
+                    showToast('Accesso non autorizzato', 'error');
+                    window.location.href = 'area-riservata.html';
+                    return;
+                }
+                
+                document.getElementById('adminName').textContent = profile?.nome_visualizzato || 'Admin';
+                
+                await loadDashboard();
+                
+            } catch (error) {
+                console.error('Auth error:', error);
+                showToast('Errore di autenticazione', 'error');
+                window.location.href = 'login.html';
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ============================================
+        // 3. LOAD DASHBOARD DATA
+        // ============================================
+        async function loadDashboard() {
+            try {
+                // Load stats
+                const [articlesRes, viewsRes, usersRes, subsRes] = await Promise.all([
+                    supabase. from('articoli').select('*', { count: 'exact', head: true }),
+                    supabase.from('articoli').select('visualizzazioni'),
+                    supabase.from('profili_redattori').select('*', { count: 'exact', head: true }),
+                    supabase.from('iscrizioni_newsletter').select('*', { count: 'exact', head: true })
+                ]);
+                
+                document.getElementById('statTotalArticles').textContent = articlesRes.count || 0;
+                document.getElementById('articlesCount').textContent = articlesRes. count || 0;
+                
+                const totalViews = viewsRes.data?. reduce((sum, a) => sum + (a.visualizzazioni || 0), 0) || 0;
+                document.getElementById('statTotalViews').textContent = totalViews. toLocaleString();
+                
+                document.getElementById('statTotalUsers'). textContent = usersRes.count || 0;
+                document. getElementById('statSubscribers').textContent = subsRes.count || 0;
+                
+                // Load recent articles
+                await loadRecentArticles();
+                
+                // Load activity log
+                await loadActivityLog();
+                
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                showToast('Errore nel caricamento dashboard', 'error');
+            }
+        }
+
+        // ============================================
+        // 4.  LOAD RECENT ARTICLES
+        // ============================================
+        async function loadRecentArticles() {
+            try {
+                const { data: articles } = await supabase
+                    .from('articoli')
+                    .select(`*, profili_redattori! articoli_autore_id_fkey(nome_visualizzato)`)
+                    .order('data_creazione', { ascending: false })
+                    .limit(5);
+                
+                const tbody = document.getElementById('recentArticlesTable');
+                
+                if (! articles || articles.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Nessun articolo</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = articles.map(a => `
+                    <tr>
+                        <td><strong>${a.titolo}</strong></td>
+                        <td>${a.profili_redattori?. nome_visualizzato || 'N/A'}</td>
+                        <td><span class="status-badge status-${a.stato === 'pubblicato' ? 'published' : a.stato === 'in_revisione' ? 'review' : 'draft'}">${a.stato}</span></td>
+                        <td>${a.visualizzazioni || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editArticle('${a.id}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteArticle('${a.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading recent articles:', error);
+            }
+        }
+
+        // ============================================
+        // 5.  LOAD ALL ARTICLES
+        // ============================================
+        async function loadArticles(filter = 'all') {
+            try {
+                showLoading(true);
+                
+                let query = supabase
+                    .from('articoli')
+                    .select(`*, profili_redattori!articoli_autore_id_fkey(nome_visualizzato)`)
+                    .order('data_creazione', { ascending: false });
+                
+                if (filter !== 'all') {
+                    query = query.eq('stato', filter);
+                }
+                
+                const { data: articles } = await query;
+                
+                const tbody = document.getElementById('articlesTableBody');
+                
+                if (! articles || articles.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Nessun articolo trovato</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = articles. map(a => `
+                    <tr>
+                        <td><input type="checkbox" class="article-checkbox" value="${a.id}" onchange="updateBulkButtons()"></td>
+                        <td><strong>${a.titolo}</strong></td>
+                        <td>${a.categoria || 'Generale'}</td>
+                        <td>${a.profili_redattori?.nome_visualizzato || 'N/A'}</td>
+                        <td><span class="status-badge status-${a.stato === 'pubblicato' ? 'published' : a.stato === 'in_revisione' ? 'review' : 'draft'}">${a.stato}</span></td>
+                        <td>${formatDate(a.data_creazione)}</td>
+                        <td>${a.visualizzazioni || 0}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" onclick="editArticle('${a.id}')"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-outline-success" onclick="toggleFeatured('${a.id}', ${a.in_evidenza})">${a.in_evidenza ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star"></i>'}</button>
+                                <button class="btn btn-outline-danger" onclick="deleteArticle('${a.id}')"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `). join('');
+                
+            } catch (error) {
+                console.error('Error loading articles:', error);
+                showToast('Errore nel caricamento articoli', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ============================================
+        // 6. CREATE/UPDATE ARTICLE
+        // ============================================
+        async function saveArticle() {
+            try {
+                showLoading(true, 'Salvataggio articolo...');
+                
+                const articleData = {
+                    titolo: document.getElementById('articleTitle'). value,
+                    sommario: document.getElementById('articleSummary').value,
+                    contenuto: document.getElementById('articleContent').value,
+                    categoria: document.getElementById('articleCategory'). value,
+                    stato: document.getElementById('articleStatus'). value,
+                    immagine_url: document.getElementById('articleImage'). value || null,
+                    in_evidenza: document.getElementById('articleFeatured').checked,
+                    autore_id: document.getElementById('articleAuthor').value || currentUser.id,
+                    data_modifica: new Date().toISOString()
+                };
+                
+                if (articleData.stato === 'pubblicato') {
+                    articleData.data_pubblicazione = new Date().toISOString();
+                }
+                
+                const articleId = document.getElementById('articleId').value;
+                
+                if (articleId) {
+                    const { error } = await supabase
+                        .from('articoli')
+                        .update(articleData)
+                        .eq('id', articleId);
+                    if (error) throw error;
+                } else {
+                    articleData.data_creazione = new Date(). 
