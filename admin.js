@@ -776,13 +776,18 @@ if (document.readyState === 'loading') {
 
 async function initializeAdmin() {
     try {
-        // Inizializza Supabase se non già fatto
-        if (typeof supabaseClient === 'undefined') {
-            console.error('Supabase client non trovato. Assicurati di includere il CDN di Supabase.');
+        // Check if Supabase SDK is loaded
+        if (typeof window.supabase === 'undefined' || !window.supabase. createClient) {
+            console.error('Supabase client non trovato.  Assicurati di includere il CDN di Supabase.');
             return;
         }
         
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize only ONCE
+        if (!supabase) {
+            supabase = window.supabase. createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized');
+        }
+        
         await checkAuthStatus();
         setupEventListeners();
         
