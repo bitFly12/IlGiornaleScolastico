@@ -9,7 +9,13 @@ function initSupabase(url, key) {
     console.log('Supabase client ready');
 }
 
-
+// Escape HTML to prevent XSS attacks
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
 function mostraArticoli(articoli) {
     const container = document.getElementById('container-articoli');
@@ -26,20 +32,20 @@ function mostraArticoli(articoli) {
             <div class="col-md-6 col-lg-4">
                 <div class="card card-article h-100">
                     ${articolo.immagine_url ? 
-                        `<img src="${articolo.immagine_url}" class="card-img-top" alt="${articolo.titolo}">` : 
+                        `<img src="${escapeHtml(articolo.immagine_url)}" class="card-img-top" alt="${escapeHtml(articolo.titolo)}">` : 
                         `<div class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
                             <i class="bi bi-newspaper text-white display-4"></i>
                         </div>`
                     }
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge bg-primary">${articolo.categoria || 'Generale'}</span>
+                            <span class="badge bg-primary">${escapeHtml(articolo.categoria || 'Generale')}</span>
                             <small class="text-muted">${data}</small>
                         </div>
-                        <h5 class="card-title">${articolo.titolo}</h5>
-                        <p class="card-text flex-grow-1">${articolo.sommario || ''}</p>
+                        <h5 class="card-title">${escapeHtml(articolo.titolo)}</h5>
+                        <p class="card-text flex-grow-1">${escapeHtml(articolo.sommario || '')}</p>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
-                            <small class="text-muted">Di ${autore}</small>
+                            <small class="text-muted">Di ${escapeHtml(autore)}</small>
                             <a href="#" class="btn btn-sm btn-outline-primary" 
                                onclick="leggiArticolo('${articolo.id}')">
                                 Leggi <i class="bi bi-arrow-right"></i>
@@ -140,8 +146,8 @@ async function caricaProssimiEventi() {
             container.innerHTML = eventi.map(evento => `
                 <div class="mb-3 p-2 border-start border-primary">
                     <strong>${new Date(evento.data_evento).toLocaleDateString('it-IT')}</strong>
-                    <p class="mb-1">${evento.titolo}</p>
-                    <small class="text-muted">${evento.luogo || 'Presso la scuola'}</small>
+                    <p class="mb-1">${escapeHtml(evento.titolo)}</p>
+                    <small class="text-muted">${escapeHtml(evento.luogo || 'Presso la scuola')}</small>
                 </div>
             `).join('');
         }
@@ -280,8 +286,8 @@ async function caricaArticoliInEvidenza() {
             carouselInner.innerHTML += `
                 <div class="carousel-item ${activeClass}">
                     <div class="carousel-item-content">
-                        <h3>${articolo.titolo}</h3>
-                        <p>${articolo.sommario}</p>
+                        <h3>${escapeHtml(articolo.titolo)}</h3>
+                        <p>${escapeHtml(articolo.sommario)}</p>
                         <div class="d-flex justify-content-between">
                             <span class="badge bg-warning">IN EVIDENZA</span>
                             <a href="#" class="btn btn-light" onclick="leggiArticolo('${articolo.id}')">
@@ -357,19 +363,19 @@ async function caricaArticoloCompleto(id, modal) {
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <span class="badge bg-primary">${articolo.categoria}</span>
+                            <span class="badge bg-primary">${escapeHtml(articolo.categoria)}</span>
                             <span class="badge bg-secondary ms-2">${data}</span>
                         </div>
                         <small class="text-muted">${articolo.visualizzazioni || 0} visualizzazioni</small>
                     </div>
                     
                     ${articolo.immagine_url ? 
-                        `<img src="${articolo.immagine_url}" class="img-fluid rounded mb-4" alt="${articolo.titolo}">` : ''
+                        `<img src="${escapeHtml(articolo.immagine_url)}" class="img-fluid rounded mb-4" alt="${escapeHtml(articolo.titolo)}">` : ''
                     }
                     
                     <div class="alert alert-info">
                         <i class="bi bi-person-circle"></i> 
-                        <strong>${autore}</strong> - ${ruolo}
+                        <strong>${escapeHtml(autore)}</strong> - ${escapeHtml(ruolo)}
                     </div>
                     
                     <div class="articolo-contenuto">
@@ -378,7 +384,7 @@ async function caricaArticoloCompleto(id, modal) {
                 </div>
                 
                 <div class="d-flex justify-content-between border-top pt-3">
-                    <button class="btn btn-outline-primary" onclick="condividiArticolo('${articolo.id}', '${articolo.titolo}')">
+                    <button class="btn btn-outline-primary" onclick="condividiArticolo('${articolo.id}', '${escapeHtml(articolo.titolo)}')">
                         <i class="bi bi-share"></i> Condividi
                     </button>
                     <button class="btn btn-primary" data-bs-dismiss="modal">

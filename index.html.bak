@@ -744,8 +744,8 @@
                     container.innerHTML = data.map(event => `
                         <div class="event-item">
                             <div class="event-date">${formatDate(event.data_evento)}</div>
-                            <h6 class="mb-1">${escapeHtml(event.titolo)}</h6>
-                            <small class="text-muted">${escapeHtml(event.luogo || 'Sede scolastica')}</small>
+                            <h6 class="mb-1">${event.titolo}</h6>
+                            <small class="text-muted">${event.luogo || 'Sede scolastica'}</small>
                         </div>
                     `).join('');
                 } else {
@@ -767,17 +767,17 @@
                     <div class="hero-article-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
                         <div class="position-relative">
                             <span class="featured-badge">⭐ Articolo Principale</span>
-                            <img src="${escapeHtml(image)}" class="hero-article-image" alt="${escapeHtml(article.titolo)}">
+                            <img src="${image}" class="hero-article-image" alt="${article.titolo}">
                         </div>
                         <div class="p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="category-badge">${escapeHtml(article.categoria || 'Generale')}</span>
+                                <span class="category-badge">${article.categoria || 'Generale'}</span>
                                 <small class="text-muted">${date}</small>
                             </div>
-                            <h2 class="article-title">${escapeHtml(article.titolo)}</h2>
-                            <p class="article-excerpt fs-5">${escapeHtml(article.sommario || '')}</p>
+                            <h2 class="article-title">${article.titolo}</h2>
+                            <p class="article-excerpt fs-5">${article.sommario || ''}</p>
                             <div class="article-meta">
-                                <span><i class="bi bi-person me-1"></i>${escapeHtml(author)}</span>
+                                <span><i class="bi bi-person me-1"></i>${author}</span>
                                 <span><i class="bi bi-eye me-1"></i>${article.visualizzazioni || 0}</span>
                             </div>
                         </div>
@@ -794,16 +794,16 @@
             
             return `
                 <div class="featured-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
-                    <img src="${escapeHtml(image)}" class="article-image" alt="${escapeHtml(article.titolo)}" style="height: 200px;">
+                    <img src="${image}" class="article-image" alt="${article.titolo}" style="height: 200px;">
                     <div class="p-3">
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="category-badge">${escapeHtml(article.categoria || 'Generale')}</span>
+                            <span class="category-badge">${article.categoria || 'Generale'}</span>
                             <small class="text-muted">${date}</small>
                         </div>
-                        <h5 class="article-title">${escapeHtml(article.titolo)}</h5>
-                        <p class="article-excerpt small">${escapeHtml((article.sommario || '').substring(0, 100))}...</p>
+                        <h5 class="article-title">${article.titolo}</h5>
+                        <p class="article-excerpt small">${(article.sommario || '').substring(0, 100)}...</p>
                         <div class="article-meta">
-                            <span><i class="bi bi-person me-1"></i>${escapeHtml(author)}</span>
+                            <span><i class="bi bi-person me-1"></i>${author}</span>
                             <span><i class="bi bi-eye me-1"></i>${article.visualizzazioni || 0}</span>
                         </div>
                     </div>
