@@ -7,9 +7,14 @@
 const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
 
+// Configurazione Gemini AI
+const GEMINI_API_KEY = 'AIzaSyDXwkvfGymYKD5pN3cV0f8ofC54j9IcS90';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+
 let supabase;
 let currentUser = null;
 let currentUserProfile = null;
+let generatedImageUrl = null;
 
 // Inizializzazione
 document.addEventListener('DOMContentLoaded', async function() {
@@ -767,3 +772,129 @@ window.addEventListener('online', () => {
 window.addEventListener('offline', () => {
     showMessage('Connessione persa. Alcune funzioni potrebbero non funzionare.', 'warning');
 });
+
+// ============================================
+// GEMINI AI IMAGE GENERATION
+// ============================================
+
+/**
+ * Generate AI image based on article title and content
+ */
+async function generateAIImage() {
+    const title = document.getElementById('article-title')?.value || '';
+    const content = document.getElementById('article-content')?.value || '';
+    
+    if (!title || !content) {
+        showMessage('Inserisci titolo e contenuto prima di generare l\'immagine', 'error');
+        return;
+    }
+    
+    // Show loading
+    document.getElementById('ai-loading').style.display = 'block';
+    document.getElementById('ai-image-preview').style.display = 'none';
+    document.getElementById('generate-ai-image').disabled = true;
+    
+    try {
+        // Step 1: Use Gemini to generate image search keywords
+        const keywords = await generateImageKeywords(title, content);
+        
+        // Step 2: Fetch image from Unsplash based on keywords
+        const imageUrl = await fetchUnsplashImage(keywords);
+        
+        if (imageUrl) {
+            generatedImageUrl = imageUrl;
+            
+            // Show preview
+            document.getElementById('ai-preview-img').src = imageUrl;
+            document.getElementById('ai-image-preview').style.display = 'block';
+            document.getElementById('ai-loading').style.display = 'none';
+            
+            showMessage('Immagine generata con successo!', 'success');
+        } else {
+            throw new Error('Impossibile generare l\'immagine');
+        }
+    } catch (error) {
+        console.error('Error generating AI image:', error);
+        showMessage('Errore nella generazione dell\'immagine: ' + error.message, 'error');
+        document.getElementById('ai-loading').style.display = 'none';
+    } finally {
+        document.getElementById('generate-ai-image').disabled = false;
+    }
+}
+
+/**
+ * Use Gemini AI to generate professional image search keywords
+ */
+async function generateImageKeywords(title, content) {
+    const prompt = `Based on this news article, generate 3-5 professional, realistic photo search keywords that would be suitable for a news publication. Focus on real-world photography, not illustrations or cartoons.
+
+Article Title: ${title}
+Article Summary: ${content.substring(0, 500)}
+
+Respond with ONLY comma-separated keywords, nothing else. Example: "students, classroom, education, learning"`;
+
+    try {
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Gemini API error: ' + response.status);
+        }
+        
+        const data = await response.json();
+        const keywords = data.candidates[0]?.content?.parts[0]?.text?.trim() || 'school, students, education';
+        
+        console.log('Generated keywords:', keywords);
+        return keywords;
+    } catch (error) {
+        console.error('Gemini API error:', error);
+        // Fallback keywords
+        return 'school, students, education, learning';
+    }
+}
+
+/**
+ * Fetch professional image from Unsplash
+ */
+async function fetchUnsplashImage(keywords) {
+    // Using Unsplash Source API (no key required, but limited)
+    // For production, use official Unsplash API with proper authentication
+    
+    const query = encodeURIComponent(keywords.split(',')[0].trim());
+    const unsplashUrl = `https://source.unsplash.com/1200x600/?${query},professional,news`;
+    
+    return unsplashUrl;
+}
+
+/**
+ * Confirm and use the generated AI image
+ */
+function confirmAIImage() {
+    if (generatedImageUrl) {
+        document.getElementById('article-image').value = generatedImageUrl;
+        showMessage('Immagine selezionata! Salva l\'articolo per confermare.', 'success');
+        
+        // Switch back to manual tab to show the URL
+        const manualTab = new bootstrap.Tab(document.getElementById('manual-tab'));
+        manualTab.show();
+    }
+}
+
+/**
+ * Regenerate AI image with different parameters
+ */
+async function regenerateAIImage() {
+    await generateAIImage();
+}
+
