@@ -12,6 +12,530 @@
     <style>
         :root {
             --cesaris-blue: #1e3a8a;
+            --cesaris-yellow: #fbbf24;
+            --sidebar-width: 280px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f8fafc;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            background: white;
+            border-right: 2px solid #e2e8f0;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        
+        .logo-header {
+            padding: 0 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-circle {
+            width: 45px;
+            height: 45px;
+            background: var(--cesaris-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .user-card {
+            background: linear-gradient(135deg, var(--cesaris-blue) 0%, #0c4a6e 100%);
+            padding: 1.25rem;
+            border-radius: 16px;
+            margin: 0 1.5rem 1.5rem;
+            color: white;
+        }
+        
+        .nav-item {
+            padding: 0.875rem 1.5rem;
+            color: #64748b;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            background: #f1f5f9;
+            color: var(--cesaris-blue);
+            border-left-color: var(--cesaris-yellow);
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .card-modern {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .chat-container {
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            max-width: 70%;
+        }
+        
+        .message-sent {
+            background: var(--cesaris-blue);
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message-received {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .article-row {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo-header">
+            <div class="logo-circle">C</div>
+            <div>
+                <h5 class="mb-0">Redazione</h5>
+                <small style="color: var(--cesaris-yellow);">Giornale Cesaris</small>
+            </div>
+        </div>
+        
+        <div class="user-card">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;" id="user-avatar">U</div>
+                <div>
+                    <div class="fw-bold" id="user-name">Nome Utente</div>
+                    <small id="user-role" style="opacity: 0.9;">Reporter</small>
+                </div>
+            </div>
+        </div>
+        
+        <nav>
+            <a href="#" class="nav-item active" data-view="dashboard">
+                <i class="bi bi-speedometer2"></i>Dashboard
+            </a>
+            <a href="#" class="nav-item" data-view="my-articles">
+                <i class="bi bi-file-text"></i>I Miei Articoli
+            </a>
+            <a href="#" class="nav-item" data-view="new-article">
+                <i class="bi bi-plus-circle"></i>Nuovo Articolo
+            </a>
+            <a href="#" class="nav-item" data-view="chat">
+                <i class="bi bi-chat-dots"></i>Chat Redazione
+            </a>
+            <a href="#" class="nav-item" data-view="notifications">
+                <i class="bi bi-bell"></i>Notifiche
+            </a>
+            <hr style="margin: 1rem 1.5rem; border-color: #e2e8f0;">
+            <a href="index.html" class="nav-item">
+                <i class="bi bi-house"></i>Torna al Sito
+            </a>
+            <a href="admin-panel.html" class="nav-item" id="admin-link" style="display: none;">
+                <i class="bi bi-shield-lock"></i>Admin Panel
+            </a>
+            <a href="#" class="nav-item" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i>Esci
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main-content">
+        <!-- Dashboard -->
+        <div id="dashboard-view">
+            <h1 class="h3 mb-4">Dashboard</h1>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <h6 class="text-muted mb-2">Articoli Pubblicati</h6>
+                        <h2 class="text-success mb-0" id="stat-published">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <h6 class="text-muted mb-2">Bozze</h6>
+                        <h2 class="text-warning mb-0" id="stat-drafts">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <h6 class="text-muted mb-2">Visualizzazioni</h6>
+                        <h2 class="text-info mb-0" id="stat-views">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Articles -->
+        <div id="my-articles-view" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">I Miei Articoli</h1>
+                <button class="btn btn-primary" onclick="showView('new-article')">Nuovo Articolo</button>
+            </div>
+            <div id="articles-list"></div>
+        </div>
+
+        <!-- New Article -->
+        <div id="new-article-view" class="d-none">
+            <h1 class="h3 mb-4">Nuovo Articolo</h1>
+            <div class="card-modern">
+                <form id="article-form">
+                    <input type="hidden" id="article-id">
+                    <div class="mb-3">
+                        <label class="form-label">Titolo *</label>
+                        <input type="text" class="form-control" id="article-title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sommario</label>
+                        <textarea class="form-control" id="article-summary" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contenuto *</label>
+                        <textarea class="form-control" id="article-content" rows="10" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoria</label>
+                            <select class="form-select" id="article-category">
+                                <option value="Notizie">Notizie</option>
+                                <option value="Sport">Sport</option>
+                                <option value="Cultura">Cultura</option>
+                                <option value="Eventi">Eventi</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Stato</label>
+                            <select class="form-select" id="article-status">
+                                <option value="bozza">Bozza</option>
+                                <option value="in_revisione">In Revisione</option>
+                                <option value="pubblicato">Pubblicato</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Salva Articolo</button>
+                        <button type="button" class="btn btn-secondary" onclick="showView('my-articles')">Annulla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div id="chat-view" class="d-none">
+            <h1 class="h3 mb-4">Chat Redazione</h1>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <h6 class="mb-3">Redattori Online</h6>
+                        <div id="users-list"></div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card-modern">
+                        <div class="chat-container">
+                            <div class="chat-messages" id="chat-messages"></div>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="chat-input" placeholder="Scrivi un messaggio...">
+                                <button class="btn btn-primary" onclick="sendMessage()">Invia</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notifications-view" class="d-none">
+            <h1 class="h3 mb-4">Notifiche</h1>
+            <div id="notifications-list"></div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
+        
+        let supabase, currentUser, currentProfile;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            await checkAuth();
+        });
+
+        async function checkAuth() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            currentUser = session.user;
+            const { data: profile } = await supabase
+                .from('profili_redattori')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+            
+            currentProfile = profile;
+            
+            document.getElementById('user-name').textContent = profile.nome_visualizzato;
+            document.getElementById('user-role').textContent = profile.ruolo;
+            document.getElementById('user-avatar').textContent = profile.nome_visualizzato[0];
+            
+            if (profile.ruolo === 'Caporedattore') {
+                document.getElementById('admin-link').style.display = 'flex';
+            }
+            
+            loadDashboard();
+            setupNav();
+            startAutoSave();
+        }
+
+        function setupNav() {
+            document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showView(item.dataset.view);
+                });
+            });
+        }
+
+        function showView(view) {
+            document.querySelectorAll('[id$="-view"]').forEach(v => v.classList.add('d-none'));
+            document.getElementById(view + '-view').classList.remove('d-none');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+            
+            if (view === 'my-articles') loadMyArticles();
+            if (view === 'chat') loadChat();
+        }
+
+        async function loadDashboard() {
+            const { count: published } = await supabase.from('articoli').select('*', { count: 'exact', head: true }).eq('autore_id', currentUser.id).eq('stato', 'pubblicato');
+            const { count: drafts } = await supabase.from('articoli').select('*', { count: 'exact', head: true }).eq('autore_id', currentUser.id).eq('stato', 'bozza');
+            const { data: articles } = await supabase.from('articoli').select('visualizzazioni').eq('autore_id', currentUser.id);
+            const views = articles?.reduce((sum, a) => sum + (a.visualizzazioni || 0), 0) || 0;
+            
+            document.getElementById('stat-published').textContent = published || 0;
+            document.getElementById('stat-drafts').textContent = drafts || 0;
+            document.getElementById('stat-views').textContent = views;
+        }
+
+        async function loadMyArticles() {
+            const { data } = await supabase
+                .from('articoli')
+                .select('*')
+                .eq('autore_id', currentUser.id)
+                .order('data_creazione', { ascending: false });
+            
+            const container = document.getElementById('articles-list');
+            container.innerHTML = data?.map(a => `
+                <div class="article-row">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="mb-2">
+                                <span class="badge-status bg-${a.stato === 'pubblicato' ? 'success' : a.stato === 'in_revisione' ? 'warning' : 'secondary'}">${a.stato}</span>
+                            </div>
+                            <h5>${a.titolo}</h5>
+                            <p class="text-muted">${a.sommario || ''}</p>
+                            <small class="text-muted">${new Date(a.data_creazione).toLocaleDateString('it-IT')}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-action btn-primary" onclick="editArticle('${a.id}')">Modifica</button>
+                            <button class="btn-action btn-danger" onclick="deleteArticle('${a.id}')">Elimina</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('') || '<p class="text-muted">Nessun articolo</p>';
+        }
+
+        document.getElementById('article-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const articleData = {
+                titolo: document.getElementById('article-title').value,
+                sommario: document.getElementById('article-summary').value,
+                contenuto: document.getElementById('article-content').value,
+                categoria: document.getElementById('article-category').value,
+                stato: document.getElementById('article-status').value,
+                autore_id: currentUser.id,
+                data_creazione: new Date().toISOString(),
+                data_modifica: new Date().toISOString()
+            };
+            
+            if (articleData.stato === 'pubblicato') {
+                articleData.data_pubblicazione = new Date().toISOString();
+            }
+            
+            const id = document.getElementById('article-id').value;
+            
+            if (id) {
+                await supabase.from('articoli').update(articleData).eq('id', id);
+            } else {
+                await supabase.from('articoli').insert([articleData]);
+            }
+            
+            alert('Articolo salvato!');
+            showView('my-articles');
+        });
+
+        async function editArticle(id) {
+            const { data } = await supabase.from('articoli').select('*').eq('id', id).single();
+            document.getElementById('article-id').value = data.id;
+            document.getElementById('article-title').value = data.titolo;
+            document.getElementById('article-summary').value = data.sommario || '';
+            document.getElementById('article-content').value = data.contenuto || '';
+            document.getElementById('article-category').value = data.categoria;
+            document.getElementById('article-status').value = data.stato;
+            showView('new-article');
+        }
+
+        async function deleteArticle(id) {
+            if (!confirm('Eliminare articolo?')) return;
+            await supabase.from('articoli').delete().eq('id', id);
+            loadMyArticles();
+        }
+
+        async function loadChat() {
+            const { data: users } = await supabase.from('profili_redattori').select('id, nome_visualizzato');
+            document.getElementById('users-list').innerHTML = users?.map(u => `
+                <div class="p-2 mb-2 rounded hover:bg-gray-100 cursor-pointer" onclick="selectUser('${u.id}', '${u.nome_visualizzato}')">
+                    ${u.nome_visualizzato}
+                </div>
+            `).join('') || '';
+        }
+
+        let selectedUserId = null;
+        function selectUser(id, name) {
+            selectedUserId = id;
+            loadMessages(id);
+        }
+
+        async function loadMessages(userId) {
+            const { data } = await supabase
+                .from('messaggi_chat')
+                .select('*, profili_redattori!messaggi_chat_mittente_id_fkey(nome_visualizzato)')
+                .or(`mittente_id.eq.${currentUser.id},destinatario_id.eq.${currentUser.id}`)
+                .or(`mittente_id.eq.${userId},destinatario_id.eq.${userId}`)
+                .order('timestamp', { ascending: true });
+            
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = data?.map(m => `
+                <div class="message ${m.mittente_id === currentUser.id ? 'message-sent' : 'message-received'}">
+                    <small class="d-block mb-1">${m.profili_redattori.nome_visualizzato}</small>
+                    ${m.messaggio}
+                </div>
+            `).join('') || '';
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            if (!selectedUserId) {
+                alert('Seleziona un utente');
+                return;
+            }
+            
+            const message = document.getElementById('chat-input').value;
+            if (!message) return;
+            
+            await supabase.from('messaggi_chat').insert([{
+                mittente_id: currentUser.id,
+                destinatario_id: selectedUserId,
+                messaggio: message
+            }]);
+            
+            document.getElementById('chat-input').value = '';
+            loadMessages(selectedUserId);
+        }
+
+        function startAutoSave() {
+            setInterval(() => {
+                const title = document.getElementById('article-title').value;
+                const content = document.getElementById('article-content').value;
+                if (title && content) {
+                    supabase.rpc('salva_bozza_auto', {
+                        p_articolo_id: document.getElementById('article-id').value || null,
+                        p_titolo: title,
+                        p_contenuto: content,
+                        p_autore_id: currentUser.id
+                    });
+                }
+            }, 30000); // 30 secondi
+        }
+
+        function logout() {
+            supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
+        :root {
+            --cesaris-blue: #1e3a8a;
             --cesaris-blue-dark: #1e293b;
             --cesaris-yellow: #fbbf24;
             --sidebar-width: 280px;
