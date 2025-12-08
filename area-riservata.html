@@ -28,10 +28,10 @@
             position: fixed;
             left: 0;
             top: 0;
-            background: linear-gradient(180deg, var(--cesaris-blue) 0%, var(--cesaris-blue-dark) 100%);
-            color: white;
+            background: #f8fafc;
+            border-right: 1px solid #e2e8f0;
             padding: 2rem 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
             overflow-y: auto;
             z-index: 1000;
         }
@@ -42,47 +42,62 @@
         }
         
         .sidebar-brand {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 0.75rem;
+            color: var(--cesaris-blue);
         }
         
         .logo-mini {
             width: 40px;
             height: 40px;
-            background: white;
-            border-radius: 50%;
+            background: var(--cesaris-blue);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--cesaris-blue);
-            font-weight: 700;
+            overflow: hidden;
+            padding: 2px;
+        }
+        
+        .logo-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         .user-profile {
-            background: rgba(255,255,255,0.1);
-            padding: 1rem;
-            border-radius: 15px;
-            margin: 0 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--cesaris-blue) 0%, #0c4a6e 100%);
+            padding: 1.25rem;
+            border-radius: 16px;
+            margin: 0 1.5rem 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
         }
         
         .nav-item-admin {
-            padding: 0.75rem 1.5rem;
-            color: rgba(255,255,255,0.9);
+            padding: 0.875rem 1.5rem;
+            color: #475569;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.875rem;
             transition: all 0.3s;
             border-left: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .nav-item-admin i {
+            font-size: 1.25rem;
+            width: 24px;
         }
         
         .nav-item-admin:hover,
         .nav-item-admin.active {
-            background: rgba(255,255,255,0.1);
-            color: var(--cesaris-yellow);
+            background: #f1f5f9;
+            color: var(--cesaris-blue);
             border-left-color: var(--cesaris-yellow);
         }
         
@@ -281,7 +296,8 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
-                    <div class="logo-mini">C</div>
+                    <div class="logo-mini">
+                        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEBEWFRUXFRYVFRUVFRUXFRUYFRYZFhcWFhcYHSggGB0nHRcXITEhJSkrLi4uFyAzODMuNygtLisBCgoKDg0OGxAQGy0lICYvLS0tLy0tLS0rKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBEQACEQEDEQH/xAAcAAEAAgMBAQEAAAAAAAAAAAAABQYBBAcDAgj/xABLEAACAQICBgYGBQkGBQUBAAABAgADEQQFBhIhMUFRBxMiYXGBFDJCkaGxIzNSwdEVNFRicnOTsvAkNVNjguESc4OS0gglwsPh8f/aAAwDAQACEQMRAD8AO4wEBAQEBAQEBAQEBAQNfFodjL6y7QOY4r5/O0D1pVAwBG47RA+4CAgICAgICAgICAgICAgICAgICAgICAgICAgedWqFtfiQB3kwPGmdR9U7muV7jvZfv8AfygbUBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQNWkNdi3Bbqvefab7vI84HpiaOsLDYd4PIjcYGcNV1lvuO4jkRvED1gICAgICAgICAgICAgICAgICAgICAgICAga+Lc7FXe2y/IcW/wB8SIHtTQAADYALDygfUDVfsPf2WsD3NuU+e73QNoQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBA+Xa2/ZA8MIpN6h3tu7lG4/fd590DZgIHxVphgVO4i0DywlQ2Kt6y7D38m8x8bjhA2ICAgICAgICAgICAgICAgICAgICAgICBF5nmdFHFKrWpp7TB3VSVvsFieJHuB5z1FZntCJtEd4ZGkGE/SqH8VPxk+nb2Rz19z+0GE/S6H8VPxj07exz19z+0GE/SqH8VPxj07exz19z+0OE/S6H8VPxj07eyPUr7tetnmFDB1xNEncQKqbQfPeN/v5x6dvZPPX3TQM8PTMBAQEBAQEBAQEBAQEBAQEBAQEBAQNXMcYlGm9WobKgLHy4DvO6TWJmdoRMxEd4RmkGE/SqH8VPxk+nb2Rz19z+0GE/SqH8VPxj07exz19z+0GE/SqH8VPxj07exz19z+0OE/SqH8VPxj07eyPUr7tetnmFDB1xNEncQKqbQfPeN/v5x6dvZPPX3TQM8PTMBAQEBAQEBAQEBAQEBAQEBAQEBAQNXMcYlGm9WobKgLHy4DvO6TWJmdoRMxEd4R
                     <span>Redazione</span>
                 </div>
             </div>
@@ -658,7 +674,10 @@
                 
                 let query = supabase
                     .from('articoli')
-                    .select('*')
+                    .select(`
+                        *,
+                        profili_redattori!inner(nome_visualizzato)
+                    `)
                     .order('data_creazione', { ascending: false });
                 
                 if (filter === 'my') {
@@ -668,7 +687,12 @@
                 }
                 
                 const { data, error } = await query;
-                if (error) throw error;
+                
+                if (error) {
+                    console.error('Load articles error:', error);
+                    showMessage('Errore caricamento articoli', 'danger');
+                    return;
+                }
                 
                 const container = document.getElementById('articles-list');
                 if (data && data.length > 0) {
