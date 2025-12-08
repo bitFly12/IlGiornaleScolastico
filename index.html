@@ -899,32 +899,51 @@
             }
         }
 
-        // Newsletter subscription
-        async function subscribeNewsletter() {
-            const email = document.getElementById('newsletter-email').value.trim();
-            const msgContainer = document.getElementById('newsletter-message');
-            
-            if (!email || !email.includes('@')) {
-                msgContainer.innerHTML = '<div class="alert alert-danger alert-cesaris">Inserisci un indirizzo email valido</div>';
-                return;
-            }
-            
-            try {
-                const { error } = await supabase
-                    .from('iscrizioni_newsletter')
-                    .insert([{ email, data_iscrizione: new Date().toISOString() }]);
-                
-                if (error && !error.message.includes('duplicate')) throw error;
-                
-                msgContainer.innerHTML = '<div class="alert alert-success alert-cesaris"><i class="bi bi-check-circle me-2"></i>Iscrizione completata con successo!</div>';
-                document.getElementById('newsletter-email').value = '';
-                
-                setTimeout(() => msgContainer.innerHTML = '', 5000);
-            } catch (error) {
-                console.error('Newsletter error:', error);
-                msgContainer.innerHTML = '<div class="alert alert-danger alert-cesaris">Errore nell\'iscrizione. Riprova.</div>';
-            }
+// Newsletter subscription
+async function subscribeNewsletter() {
+    const emailInput = document.getElementById('newsletter-email');
+    const msgContainer = document.getElementById('newsletter-message');
+    
+    if (!emailInput || !msgContainer) {
+        console.error('Newsletter elements not found');
+        return;
+    }
+    
+    const email = emailInput.value.trim();
+    
+    if (!email || ! email.includes('@')) {
+        msgContainer.innerHTML = '<div class="alert alert-danger alert-cesaris">Inserisci un indirizzo email valido</div>';
+        return;
+    }
+    
+    try {
+        const { error } = await supabase
+            .from('iscrizioni_newsletter')
+            .insert([{ 
+                email: email, 
+                data_iscrizione: new Date().toISOString(),
+                attivo: true
+            }]);
+        
+        if (error && error.code === '23505') {
+            // Duplicate email
+            msgContainer.innerHTML = '<div class="alert alert-warning alert-cesaris"><i class="bi bi-info-circle me-2"></i>Questa email è già iscritta! </div>';
+        } else if (error) {
+            throw error;
+        } else {
+            msgContainer.innerHTML = '<div class="alert alert-success alert-cesaris"><i class="bi bi-check-circle me-2"></i>Iscrizione completata con successo!</div>';
+            emailInput.value = '';
         }
+        
+        setTimeout(() => msgContainer.innerHTML = '', 5000);
+    } catch (error) {
+        console.error('Newsletter error:', error);
+        msgContainer.innerHTML = '<div class="alert alert-danger alert-cesaris">Errore nell\'iscrizione.  Riprova. </div>';
+    }
+}
+
+// Rendi la funzione globale
+window.subscribeNewsletter = subscribeNewsletter;
 
         // Utility functions
         function formatDate(dateString) {
