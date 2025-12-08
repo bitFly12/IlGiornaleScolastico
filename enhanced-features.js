@@ -9,7 +9,8 @@ let supabase;
 
 // Initialize enhanced features
 function initEnhancedFeatures() {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Use the globally initialized Supabase client
+    supabase = window.supabaseClient;
     
     // Initialize all features
     initBackToTop();

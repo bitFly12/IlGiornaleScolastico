@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
     
     <style>
         :root {
@@ -981,7 +982,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Configuration
+        // Use shared Supabase client
         const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
         
@@ -992,7 +993,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // Use the globally initialized Supabase client
+            supabase = window.supabaseClient;
             editorModal = new bootstrap.Modal(document.getElementById('editor-modal'));
             await checkAuth();
             setupEventListeners();

@@ -3,7 +3,7 @@
 // Giornale Scolastico - Supabase Backend
 // ============================================
 
-// Configurazione Supabase
+// Configurazione Supabase - Use shared client
 const SUPABASE_URL = 'https://ftazdkxyfekyzfvgrgiw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ0YXpka3h5ZmVreXpmdmdyZ2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwNTE3MzQsImV4cCI6MjA4MDYyNzczNH0._V8LM9f8Dz2s9j8hcxUEWkHN8FMX9QW7YzKH3CgAzdU';
 
@@ -19,8 +19,8 @@ let generatedImageUrl = null;
 // Inizializzazione
 document.addEventListener('DOMContentLoaded', async function() {
     try {
-        // Inizializza Supabase
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Use the globally initialized Supabase client
+        supabase = window.supabaseClient;
         
         // Controlla se l'utente è già loggato
         await checkAuthStatus();

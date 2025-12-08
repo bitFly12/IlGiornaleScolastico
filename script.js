@@ -1,11 +1,12 @@
-// Configurazione Supabase
+// Use shared Supabase client from supabase-client.js
 let supabaseClient;
 let articoliCaricati = 0;
 const ARTICOLI_PER_PAGINA = 6;
 
 function initSupabase(url, key) {
-    supabaseClient = supabase.createClient(url, key);
-    console.log('Supabase inizializzato');
+    // Use the globally initialized client
+    supabaseClient = window.supabaseClient;
+    console.log('Supabase client ready');
 }
 
 
@@ -194,12 +195,25 @@ async function caricaUltimiArticoli() {
 // Incrementa contatore visualizzazioni
 async function incrementaVisualizzazioni(articoloId) {
     try {
-        const { error } = await supabaseClient
+        // First get current value
+        const { data: article, error: fetchError } = await supabaseClient
             .from('articoli')
-            .update({ visualizzazioni: supabaseClient.increment(1) })
+            .select('visualizzazioni')
+            .eq('id', articoloId)
+            .single();
+
+        if (fetchError) {
+            console.error('Errore recupero visualizzazioni:', fetchError);
+            return;
+        }
+
+        // Then increment
+        const { error: updateError } = await supabaseClient
+            .from('articoli')
+            .update({ visualizzazioni: (article?.visualizzazioni || 0) + 1 })
             .eq('id', articoloId);
 
-        if (error) console.error('Errore incremento visualizzazioni:', error);
+        if (updateError) console.error('Errore incremento visualizzazioni:', updateError);
     } catch (error) {
         console.error('Errore:', error);
     }
@@ -285,11 +299,12 @@ async function caricaArticoliInEvidenza() {
 
 // 3. FUNZIONE PER LEGGERE ARTICOLO COMPLETO
 function leggiArticolo(id) {
-    // Incrementa contatore visualizzazioni
-    supabaseClient
-        .from('articoli')
-        .update({ visualizzazioni: supabaseClient.increment(1) })
-        .eq('id', id);
+    // Incrementa contatore visualizzazioni using the proper function
+    incrementaVisualizzazioni(id);
+    
+    // Remove existing modal before creating new one
+    const existingModal = document.getElementById('modal-articolo');
+    if (existingModal) existingModal.remove();
     
     // Mostra articolo in modal
     const modalHTML = `
