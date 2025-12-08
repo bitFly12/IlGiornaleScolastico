@@ -1017,3 +1017,25 @@ async function previewNewsletter(articleId) {
         showMessage('Errore nel caricamento preview', 'error');
     }
 }
+// ============================================
+// EXPOSE FUNCTIONS FOR ADMIN-PANEL. HTML
+// ============================================
+
+// Make key functions available globally for admin-panel.html
+window. supabase = supabase;
+window.currentUser = currentUser;
+window.currentUserProfile = currentUserProfile;
+
+// Expose utility functions
+window.showLoading = showLoading;
+window.showMessage = showMessage;
+window.formatDate = formatDate;
+window. checkAuthStatus = checkAuthStatus;
+
+// Make these functions available without window prefix
+if (typeof globalThis !== 'undefined') {
+    globalThis.supabase = supabase;
+    globalThis.checkAuthStatus = checkAuthStatus;
+    globalThis.showLoading = showLoading;
+    globalThis.showMessage = showMessage;
+}
