@@ -1395,7 +1395,7 @@ async function checkAuth() {
 
     async function toggleFeatured(id, current) {
         try {
-            await supabase.from('articoli').update({ in_evidenza: !current }). eq('id', id);
+            await supabase.from('articoli').update({ in_evidenza: !current }).eq('id', id);
             showToast('Articolo aggiornato', 'success');
             loadArticles();
         } catch (error) {
@@ -1625,7 +1625,7 @@ async function checkAuth() {
     async function deleteSubscriber(id) {
         if (!confirm('Rimuovere questo iscritto?')) return;
         try {
-            await supabase. from('iscrizioni_newsletter'). delete().eq('id', id);
+            await supabase.from('iscrizioni_newsletter').delete().eq('id', id);
             showToast('Iscritto rimosso', 'success');
             loadSubscribers();
         } catch (error) {

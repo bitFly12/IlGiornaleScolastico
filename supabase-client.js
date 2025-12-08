@@ -9,11 +9,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 // Initialize Supabase client once and export globally
 if (typeof window !== 'undefined' && typeof window.supabase !== 'undefined') {
-    // Create and export the client globally
-    window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Create the client using the Supabase library
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     
-    // Also export as 'supabase' for convenience
-    window.supabase = window.supabaseClient;
+    // Export as supabaseClient to avoid conflicts with the Supabase library
+    window.supabaseClient = client;
+    
+    // Also export as 'supabase' for convenience in pages that don't use the library directly
+    // This is safe because we're only overwriting after we've used it to create the client
+    window.supabase = client;
     
     console.log('Supabase client initialized successfully');
 } else {
