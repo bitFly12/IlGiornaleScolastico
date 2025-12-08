@@ -262,7 +262,19 @@ async function createOrUpdateArticle(articleData, articleId = null) {
             data_modifica: now
         };
         
+        let wasPublished = false;
+        let savedArticle = null;
+        
         if (articleId) {
+            // Check if article is being published now
+            const { data: oldArticle } = await supabase
+                .from('articoli')
+                .select('stato')
+                .eq('id', articleId)
+                .single();
+            
+            wasPublished = oldArticle?.stato !== 'pubblicato' && articleData.stato === 'pubblicato';
+            
             // Update existing article
             articleToSave.autore_id = currentUser.id;
             const { data, error } = await supabase
@@ -273,13 +285,16 @@ async function createOrUpdateArticle(articleData, articleId = null) {
                 .single();
                 
             if (error) throw error;
+            savedArticle = data;
             showMessage('Articolo aggiornato con successo!', 'success');
-            return data;
             
         } else {
             // Create new article
             articleToSave.autore_id = currentUser.id;
             articleToSave.data_creazione = now;
+            
+            // Check if creating as published
+            wasPublished = articleData.stato === 'pubblicato';
             
             const { data, error } = await supabase
                 .from('articoli')
@@ -288,9 +303,22 @@ async function createOrUpdateArticle(articleData, articleId = null) {
                 .single();
                 
             if (error) throw error;
+            savedArticle = data;
             showMessage('Articolo creato con successo!', 'success');
-            return data;
         }
+        
+        // Send newsletter if article was just published
+        if (wasPublished && savedArticle) {
+            try {
+                showMessage('Invio newsletter in corso...', 'info');
+                await sendNewsletterForArticle(savedArticle.id);
+            } catch (newsletterError) {
+                console.error('Newsletter error:', newsletterError);
+                showMessage('Articolo salvato, ma errore nell\'invio newsletter', 'warning');
+            }
+        }
+        
+        return savedArticle;
         
     } catch (error) {
         console.error('Error saving article:', error);
@@ -898,3 +926,94 @@ async function regenerateAIImage() {
     await generateAIImage();
 }
 
+
+// ============================================
+// NEWSLETTER SYSTEM
+// ============================================
+
+/**
+ * Send newsletter to all subscribers when article is published
+ */
+async function sendNewsletterForArticle(articleId) {
+    try {
+        console.log('Sending newsletter for article:', articleId);
+        
+        // Call Supabase Edge Function
+        const { data, error } = await supabase.functions.invoke('send-newsletter', {
+            body: { articleId }
+        });
+        
+        if (error) {
+            console.error('Newsletter send error:', error);
+            throw error;
+        }
+        
+        console.log('Newsletter sent successfully:', data);
+        
+        if (data.sentCount > 0) {
+            showMessage(`Newsletter inviata a ${data.sentCount} iscritti!`, 'success');
+        } else {
+            showMessage('Nessun iscritto attivo per la newsletter', 'info');
+        }
+        
+        return data;
+        
+    } catch (error) {
+        console.error('Error in sendNewsletterForArticle:', error);
+        throw error;
+    }
+}
+
+/**
+ * Preview newsletter before sending (for testing)
+ */
+async function previewNewsletter(articleId) {
+    try {
+        const { data: article, error } = await supabase
+            .from('articoli')
+            .select(`
+                id,
+                titolo,
+                sommario,
+                immagine_url,
+                profili_redattori(nome_visualizzato)
+            `)
+            .eq('id', articleId)
+            .single();
+        
+        if (error) throw error;
+        
+        const author = article.profili_redattori?.nome_visualizzato || 'Redazione Cesaris';
+        const articleUrl = `${window.location.origin}/articolo/${article.id}`;
+        
+        const previewHtml = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                    <h1>📰 Giornale Cesaris</h1>
+                    <p>Nuovo Articolo Pubblicato!</p>
+                </div>
+                <div style="background: white; padding: 30px; border: 1px solid #e2e8f0;">
+                    <h2>${article.titolo}</h2>
+                    ${article.immagine_url ? `<img src="${article.immagine_url}" style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;">` : ''}
+                    <p>${article.sommario || ''}</p>
+                    <p><strong>Autore:</strong> ${author}</p>
+                    <a href="${articleUrl}" style="display: inline-block; background: #fbbf24; color: #1e3a8a; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 20px 0;">
+                        Leggi l'articolo completo
+                    </a>
+                </div>
+                <div style="background: #f8fafc; padding: 20px; text-align: center; font-size: 12px; color: #64748b; border-radius: 0 0 10px 10px;">
+                    <p>&copy; 2025 Giornale Cesaris. Tutti i diritti riservati.</p>
+                </div>
+            </div>
+        `;
+        
+        // Open preview in new window
+        const previewWindow = window.open('', 'Newsletter Preview', 'width=700,height=800');
+        previewWindow.document.write(previewHtml);
+        previewWindow.document.close();
+        
+    } catch (error) {
+        console.error('Error previewing newsletter:', error);
+        showMessage('Errore nel caricamento preview', 'error');
+    }
+}
